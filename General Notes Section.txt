@@ -13,19 +13,40 @@ Loop Invariant :	a predicate (predicate - a sentence with some variable and when
 
 Analysis of Algorithm Efficiency 
 
-Definition : let f and g be a real-valued functions on the same domain of nonnegative real numbers.
+1. Notation : 
 
-a) 	f is of order at least g, written f(x) is Omega(g(x)), if and only if, there exists a positive real number A and a nonnegative real number a
-	such that :
+	Definition : let f and g be a real-valued functions on the same domain of nonnegative real numbers.
 
-		A|g(x)| <= |f(x)| , for all real numbers x > a
+	a) 	f is of order at least g, written f(x) is Omega(g(x)), if and only if, there exists a positive real number A and a nonnegative real number a
+		such that :
 
-b) 	f is of order at most g, written f(x) is O(g(x)), if, and only if, there exists a positive real number B and a nonnegative real number b
-	such that : 
+			A|g(x)| <= |f(x)| , for all real numbers x > a
 
-		B|g(x)| >= |f(x)| , for all real numbers x > b
+	b) 	f is of order at most g, written f(x) is O(g(x)), if, and only if, there exists a positive real number B and a nonnegative real number b
+		such that : 
 
-c) 	f is of order g, written f(x) is Theta(g(x)), if, and only if, there exist a positive real numbers A, B and a nonnegative real number c
-	such that :
+			B|g(x)| >= |f(x)| , for all real numbers x > b
 
-		A|g(x)| <= |f(x)| <= B|g(x)| , for all real numbers x > c
+	c) 	f is of order g, written f(x) is Theta(g(x)), if, and only if, there exist a positive real numbers A, B and a nonnegative real number c
+		such that :
+
+			A|g(x)| <= |f(x)| <= B|g(x)| , for all real numbers x > c
+
+	Properties : 
+
+	1. f(x) is Omega(g(x)) and f(x) is O(g(x)) if, and only if, f(x) is Theta(g(x))
+	2. f(x) is Omega(g(x)) if, and only if, g(x) is O(f(x))
+	3. if f(x) is O(g(x)) and g(x) is O(h(x)), then f(x) O(h(x))
+
+2. Order of Power Functions : 
+
+	Observe : 
+
+		1. 1 < x 
+		2. x < x^2  			#we multiply by x
+		3. x < x^3				#multiply by x again
+
+	This holds as we go on and so we can confirm the following generalization
+
+		1. For any rational numbers r and s, if x > 1 and r < s, then x^r < x^s
+		2. this means that x^r is O(x^s)
