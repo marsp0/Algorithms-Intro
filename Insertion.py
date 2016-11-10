@@ -39,6 +39,16 @@ def sort_by_insertion(iterable):
 		i += 1
 	return iterable
 
+''' EXERCISES '''
+
+def linear_search(iterable, value):
+	#not sure what loop invariant can be used here 	
+	for item in iterable:
+		if item == value:
+			return value
+	return None
+
+
 if __name__ == '__main__':
 	temp_data = []
 	for i in xrange(1,10000):

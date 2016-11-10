@@ -13,9 +13,19 @@ Loop Invariant :	a predicate (predicate - a sentence with some variable and when
 
 Analysis of Algorithm Efficiency 
 
-1.1 Real valued functions and their graphs 
+Definition : let f and g be a real-valued functions on the same domain of nonnegative real numbers.
 
-Definition about the graph of a function - Let f be a real-valued function of a real variable. The graph of f is the set of all points (x,y) in the Cartesian plane with the following properties :
+a) 	f is of order at least g, written f(x) is Omega(g(x)), if and only if, there exists a positive real number A and a nonnegative real number a
+	such that :
 
-	- x is in the domain of f
-	- y = f(x)
+		A|g(x)| <= |f(x)| , for all real numbers x > a
+
+b) 	f is of order at most g, written f(x) is O(g(x)), if, and only if, there exists a positive real number B and a nonnegative real number b
+	such that : 
+
+		B|g(x)| >= |f(x)| , for all real numbers x > b
+
+c) 	f is of order g, written f(x) is Theta(g(x)), if, and only if, there exist a positive real numbers A, B and a nonnegative real number c
+	such that :
+
+		A|g(x)| <= |f(x)| <= B|g(x)| , for all real numbers x > c
