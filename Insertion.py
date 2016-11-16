@@ -27,6 +27,7 @@ def sort_by_insertion(iterable):
 	while (i < len_to_reach):
 		#start a second loop to sort the current element in the already sorted part of the sequence
 		j = i
+		#switch iterable[j] < iterable[j-1] with iterable[j] > iterable[j-1] to start sortin in a decreasing order
 		while ((j > 0) and (iterable[j] < iterable[j-1])):
 			'''we can do :
 			temp = iterable[j-1]
@@ -48,13 +49,18 @@ def linear_search(iterable, value):
 			return value
 	return None
 
+'''TESTING'''
+
+def increment(y):
+	'''recursive algorithm for incrementing natural numbers'''
+	if y == 0:
+		return 1
+	else:
+		if y%2 ==1 :
+			return 2 * increment(y/2)
+		else:
+			return y + 1
+
 
 if __name__ == '__main__':
-	temp_data = []
-	for i in xrange(1,10000):
-		temp_data.append(random.randint(1,1000))
-	current_time = time.time()
-	p = sort_by_insertion(temp_data)
-	after_time = time.time()
-	print p
-	print after_time - current_time
+	print increment(3)
