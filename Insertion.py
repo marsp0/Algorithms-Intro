@@ -49,10 +49,13 @@ def linear_search(iterable, value):
 			return value
 	return None
 
-'''TESTING'''
-
 def increment(y):
-	'''recursive algorithm for incrementing natural numbers'''
+	''' - recursive algorithm for incrementing natural numbers
+		
+		PROOF OF CORRECTNESS : pretty solid explanation here 
+		http://stackoverflow.com/questions/21614159/mathematic-induction-how-to-prove-that-this-work-in-this-recursive-function
+
+	'''
 	if y == 0:
 		return 1
 	else:
@@ -63,4 +66,5 @@ def increment(y):
 
 
 if __name__ == '__main__':
-	print increment(3)
+	print increment.__doc__
+
