@@ -18,7 +18,7 @@
 import random
 import time
 
-def sort_by_insertion(iterable):
+def insertion(iterable):
 	#constant guard
 	i = 1
 	len_to_reach = len(iterable)
@@ -66,5 +66,10 @@ def increment(y):
 
 
 if __name__ == '__main__':
-	print increment.__doc__
+	data = [random.randint(1,1000) for x in xrange(10000)]
+	current_time = time.time()
+	data = insertion(data)
+	after_time = time.time()
+	total_time = after_time - current_time
+	print total_time
 
