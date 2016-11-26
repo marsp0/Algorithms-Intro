@@ -1,3 +1,7 @@
+'''Single Linked List - means that the nodes point only to the successor 
+	(no predecessor)
+'''
+
 class LinkedList(object):
 
 	def __init__(self):
@@ -10,7 +14,11 @@ class LinkedList(object):
 
 	def print_elements(self):
 		
-		self.current_node.print_element()
+		return self.current_node.print_element()
+
+	def search(self,element):
+
+		return self.current_node.search(element)
 
 
 
@@ -29,6 +37,15 @@ class Node(object):
 		else:
 			self.next_node.insert(element)
 
+	def search(self,element):
+
+		if self.current_node == element:
+			return element
+		elif self.next_node == None:
+			return -1
+		else:
+			return self.next_node.search(element)
+
 	def print_element(self):
 
 		print self.current_node
@@ -36,8 +53,6 @@ class Node(object):
 		if self.next_node != None:
 			self.next_node.print_element()
 
-	def delete(self,element):
-		
 
 if __name__ == '__main__':
 
@@ -46,4 +61,4 @@ if __name__ == '__main__':
 	while i < 10:
 		p.insert(i)
 		i += 1
-	p.print_elements()
+	print p.search(3)
