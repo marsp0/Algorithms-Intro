@@ -6,52 +6,66 @@ class LinkedList(object):
 
 	def __init__(self):
 		self.len = 0
-		self.current_node = Node()
+		self.head = Node()
 
-	def insert(self,element):
-		self.current_node.insert(element)
+	def insert(self,data):
+		self.head.insert(data)
 		self.len += 1
 
-	def print_elements(self):
-		
-		return self.current_node.print_element()
+	def search(self,data):
 
-	def search(self,element):
+		return self.head.search(data)
 
-		return self.current_node.search(element)
+	def delete(self,data):
 
+		success = self.head.delete(data)
+		if success == True:
+			self.len -= 1
+		return success
 
 
 class Node(object):
 
-	def __init__(self, current = None):
+	def __init__(self, data = None):
 
-		self.current_node = current
+		self.data = data
 		self.next_node = None
 
-	def insert(self,element):
+	def insert(self,data):
 
-		if self.current_node == None:
-			self.current_node = element
+		if self.data == None:
+			self.data = data
 			self.next_node = Node()
 		else:
-			self.next_node.insert(element)
+			self.next_node.insert(data)
 
-	def search(self,element):
+	def search(self,data):
 
-		if self.current_node == element:
-			return element
+		if self.data == data:
+			return self
 		elif self.next_node == None:
-			return -1
+			return False
 		else:
-			return self.next_node.search(element)
+			return self.next_node.search(data)
 
-	def print_element(self):
 
-		print self.current_node
+	def delete(self,data):
 
-		if self.next_node != None:
-			self.next_node.print_element()
+		if self.search(data):
+
+			if self.data == data:
+				self.data = self.next_node.data
+				self.next_node = self.next_node.next_node
+			else:
+				self.next_node
+		else:
+
+			return False
+		return True
+
+	def __str__(self):
+		return str(self.data)
+
 
 
 if __name__ == '__main__':
@@ -61,4 +75,6 @@ if __name__ == '__main__':
 	while i < 10:
 		p.insert(i)
 		i += 1
-	print p.search(3)
+	print p.len
+	print p.delete(12)
+	print p.len
