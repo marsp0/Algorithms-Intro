@@ -50,7 +50,9 @@ class Node(object):
 
 
 	def delete(self,data):
-
+		''' O(n) - because you have to traverse the whole list if the data is in the last node 
+			
+		'''
 		if self.search(data):
 
 			if self.data == data:
