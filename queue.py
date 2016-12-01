@@ -13,17 +13,22 @@ class DoubleQueue(object):
 	def enqueue(self,data):
 
 		if self.head == None:
-			print 'was once here'
-			self.head = self.tail = Node(data)
+			self.head = Node(data)
 		else:
-			new_node = Node(data)
-			new_node.prev = self.tail
-			self.tail = new_node
+			if self.tail == None:
+				self.tail = Node(data)
+				self.head.next, self.tail.prev = self.tail, self.head
+			else:
+				new_node = Node(data)
+				new_node.prev, self.tail.next = self.tail, new_node
+				self.tail = new_node
+		self._len += 1
 
 	def dequeue(self):
 		if self.head != None:
 			to_return = self.head
 			self.head = to_return.next
+			self._len -= 1
 			return to_return.data
 		else:
 			return False
@@ -50,7 +55,9 @@ if __name__ == '__main__':
 	p.enqueue(1)
 	p.enqueue(2)
 	p.enqueue(3)
+	p.enqueue(3)
 	print p.dequeue()
 	print p.dequeue()
 	print p.dequeue()
 	print p.dequeue()
+	
