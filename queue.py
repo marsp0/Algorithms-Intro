@@ -3,6 +3,11 @@
 
 class DoubleQueue(object):
 
+	'''
+		Insertion and deletion in this implementation are O(1)
+
+	'''
+
 	def __init__(self, data = None):
 
 		self.head = None
@@ -38,7 +43,46 @@ class DoubleQueue(object):
 
 		return self._len
 
+class SingleQueue(object):
+	''' implementing it with signly linked list logic.
 
+		insertion here is O(n)
+		deleteion is O(1) 
+
+	'''
+
+	def __init__(self):
+
+		self.head = SingleNode()
+		self._len = 0
+
+	def enqueue(self,data):
+
+		self.head.insert(data)
+		self._len += 1
+
+	def dequeue(self):
+		to_return = self.head
+		self.head = to_return.next
+		self._len -= 1
+		return to_return.data
+
+	def __len__(self):
+
+		return self._len
+
+class SingleNode(object):
+
+	def __init__(self,data = None):
+		self.data = data
+		self.next = None
+
+	def insert(self,data):
+		if self.data == None:
+			self.data = data
+			self.next = SingleNode()
+		else:
+			self.next.insert(data)
 
 class Node(object):
 
@@ -51,7 +95,7 @@ class Node(object):
 
 if __name__ == '__main__':
 
-	p = DoubleQueue()
+	p = SingleQueue()
 	p.enqueue(1)
 	p.enqueue(2)
 	p.enqueue(3)
