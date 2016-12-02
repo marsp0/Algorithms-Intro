@@ -6,8 +6,15 @@ class Tree(object):
 
 	def insert(self,data):
 
+		self.root.insert(data)
 
+	def delete(self,data):
 
+		self.root.delete(data)
+
+	def print_elements(self):
+
+		return self.root.print_element()
 
 class Node(object):
 
@@ -20,7 +27,7 @@ class Node(object):
 
 	def insert(self,data):
 
-		if self.data === None:
+		if self.data == None:
 
 			self.data = data
 		else:
@@ -38,9 +45,13 @@ class Node(object):
 
 	def delete(self,data):
 
+		#print data
+
 		if self.data == data:
 
 			if self.right == None and self.left == None:
+
+				#print self.data			
 
 				if self.parent.left.data == data:
 
@@ -62,12 +73,15 @@ class Node(object):
 
 				counter = self.right
 				while True:
-					if self.right = None:
+					if counter.right == None:
 						break
 					else:
 						counter = counter.right
 
-				self.data = counter
+				print self.data
+				self.data = counter.data
+				print self.data
+				counter.delete(counter.data)
 
 		else:
 			if data < self.data:
@@ -85,3 +99,23 @@ class Node(object):
 				return self.left.search(data)
 			else:
 				return self.right.search(data)
+
+	def print_element(self):
+
+		print self.data
+		if self.right != None:
+			self.right.print_element()
+		if self.left != None:
+			self.left.print_element()
+
+if __name__ == '__main__':
+
+	p = Tree()
+	p.insert(3)
+	p.insert(4)
+	p.insert(1)
+	p.insert(2)
+	p.insert(0)
+	p.delete(4)
+	print p.print_elements()
+	#print p.root.left.left.data == 0
