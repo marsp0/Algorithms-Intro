@@ -1,3 +1,5 @@
+import random
+
 class Tree(object):
 
 	def __init__(self):
@@ -20,7 +22,7 @@ class Node(object):
 
 	def __init__(self,data = None, parent = None):
 
-		self.parent = None
+		self.parent = parent
 		self.data = data
 		self.left = None
 		self.right = None
@@ -45,13 +47,9 @@ class Node(object):
 
 	def delete(self,data):
 
-		#print data
-
 		if self.data == data:
 
-			if self.right == None and self.left == None:
-
-				#print self.data			
+			if self.right == None and self.left == None:		
 
 				if self.parent.left.data == data:
 
@@ -76,11 +74,8 @@ class Node(object):
 					if counter.right == None:
 						break
 					else:
-						counter = counter.right
-
-				print self.data
+						counter = counter.left
 				self.data = counter.data
-				print self.data
 				counter.delete(counter.data)
 
 		else:
@@ -102,20 +97,14 @@ class Node(object):
 
 	def print_element(self):
 
-		print self.data
+		if self.parent:
+
+			print self.data, 'is below %s' % (self.parent.data)
+		else:
+			print self.data
+
 		if self.right != None:
 			self.right.print_element()
 		if self.left != None:
 			self.left.print_element()
-
-if __name__ == '__main__':
-
-	p = Tree()
-	p.insert(3)
-	p.insert(4)
-	p.insert(1)
-	p.insert(2)
-	p.insert(0)
-	p.delete(4)
-	print p.print_elements()
-	#print p.root.left.left.data == 0
+			
