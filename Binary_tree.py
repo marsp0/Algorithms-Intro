@@ -40,7 +40,34 @@ class Node(object):
 
 		if self.data == data:
 
-			pass
+			if self.right == None and self.left == None:
+
+				if self.parent.left.data == data:
+
+					self.parent.left = None
+				else:
+
+					self.parent.right = None
+			elif self.right == None or self.left == None:
+
+				if self.right == None:
+
+					self.data , self.left = self.left.data , self.left.left
+				
+				else:
+
+					self.data, self.right = self.right.data , self.right.right
+
+			else:
+
+				counter = self.right
+				while True:
+					if self.right = None:
+						break
+					else:
+						counter = counter.right
+
+				self.data = counter
 
 		else:
 			if data < self.data:
