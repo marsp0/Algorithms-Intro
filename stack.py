@@ -25,5 +25,3 @@ class Node(object):
 		self.next_node = None
 
 	
-if __name__ == '__main__':
-	
