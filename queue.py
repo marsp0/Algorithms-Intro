@@ -92,16 +92,3 @@ class Node(object):
 		self.data = data
 		self.next = None
 
-
-if __name__ == '__main__':
-
-	p = SingleQueue()
-	p.enqueue(1)
-	p.enqueue(2)
-	p.enqueue(3)
-	p.enqueue(3)
-	print p.dequeue()
-	print p.dequeue()
-	print p.dequeue()
-	print p.dequeue()
-	
