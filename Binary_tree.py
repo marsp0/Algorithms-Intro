@@ -47,16 +47,22 @@ class Node(object):
 
 	def delete(self,data):
 
+
 		if self.data == data:
 
-			if self.right == None and self.left == None:		
+			if self.right == None and self.left == None:
 
-				if self.parent.left.data == data:
+				if self.parent == None:
 
-					self.parent.left = None
+					self.data = None
 				else:
 
-					self.parent.right = None
+					if self.parent.left.data == data:
+
+						self.parent.left = None
+					else:
+
+						self.parent.right = None
 			elif self.right == None or self.left == None:
 
 				if self.right == None:
@@ -71,7 +77,7 @@ class Node(object):
 
 				counter = self.right
 				while True:
-					if counter.right == None:
+					if counter.left == None:
 						break
 					else:
 						counter = counter.left
