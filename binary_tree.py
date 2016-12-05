@@ -1,4 +1,13 @@
-import random
+''' Notes : 
+
+		1. is it possible to implement the meat of the methods in the tree instead of
+		   in the node ?
+
+		2. If we need a dictionary, we just need to implement the same data structure
+		   using also key attributes
+
+
+'''
 
 class Tree(object):
 
