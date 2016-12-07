@@ -1,3 +1,11 @@
+''' Implementation of the Heap structure using a dynamic array.
+
+	Basic Idea : data structure that visually is a complete binary tree, but the actual
+	structure is an array (doubly linked list)
+
+
+'''
+
 class MinHeap(object):
 
 	def __init__(self):
@@ -26,10 +34,19 @@ class MinHeap(object):
 				return
 		return
 
+	def extract_min(self):
 
-	def delete(self,element):
+		to_return = self.heap[0]
+		self.heap[0] = self.heap.pop(-1)
+		while True:
 
-		pass
+			if self.heap[0] < self.heap[1] and self.heap[0] < self.heap[2]:
+				return to_return
+			else:
+				if self.heap[1] < self.heap[2]:
+					self.heap[0], self.heap[1] = self.heap[1], self.heap[0]
+				else:
+					self.heap[0], self.heap[2] = self.heap[2], self.heap[0]
 
 if __name__ == '__main__':
 
@@ -39,4 +56,6 @@ if __name__ == '__main__':
 
 		p.insert(i)
 	
+	print p.heap
+	p.extract_min()
 	print p.heap
