@@ -67,16 +67,3 @@ class Node(object):
 
 	def __str__(self):
 		return str(self.data)
-
-
-
-if __name__ == '__main__':
-
-	p = LinkedList()
-	i = 0
-	while i < 10:
-		p.insert(i)
-		i += 1
-	print p.len
-	print p.delete(12)
-	print p.len
