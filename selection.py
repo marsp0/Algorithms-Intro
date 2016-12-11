@@ -16,13 +16,3 @@ def selection(iterable):
 			iterable[i], iterable[current_min_element] = iterable[current_min_element] , iterable[i]
 
 	return iterable
-
-
-if __name__ == '__main__' :
-
-	data = [random.randint(1,1000) for x in xrange(10000)]
-	current_time = time.time()
-	data = selection(data)
-	after_time = time.time()
-	total_time = after_time - current_time
-	print total_time

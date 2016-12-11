@@ -6,6 +6,9 @@
 
 '''
 
+import time
+import random
+
 class MinHeap(object):
 
 	def __init__(self):
@@ -39,7 +42,6 @@ class MinHeap(object):
 		to_return = self.heap[0]
 		self.heap[0] = self.heap.pop(-1)
 		while True:
-
 			if self.heap[0] < self.heap[1] and self.heap[0] < self.heap[2]:
 				return to_return
 			else:
@@ -48,14 +50,25 @@ class MinHeap(object):
 				else:
 					self.heap[0], self.heap[2] = self.heap[2], self.heap[0]
 
-if __name__ == '__main__':
 
+def heapsort(array):
 
 	p = MinHeap()
-	for i in xrange(20, 1, -1):
-
+	new_one = []
+	for i in array:
 		p.insert(i)
-	
-	print p.heap
-	p.extract_min()
-	print p.heap
+	before = time.time()
+	for index in xrange(len(array)):
+
+		new_one.append(p.extract_min())
+	after = time.time()
+	print after - before
+	return new_one
+
+if __name__ == '__main__':
+	array = []
+	for i in xrange(10):
+
+		array.append(random.randint(1,1000))
+
+	print heapsort(array)
