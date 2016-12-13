@@ -85,8 +85,8 @@ if __name__ == '__main__':
 
 	array = []
 
-	for i in xrange(10):
+	for i in xrange(1000):
 
 		array.append(random.randint(1,10000))
 
-	print heapsort(array)
+	heapsort(array)
