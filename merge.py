@@ -1,4 +1,5 @@
 import random
+import time
 
 def merge_sort(array):
 
@@ -34,6 +35,9 @@ def merge(left,right):
 if __name__ == '__main__':
 
 	array = []
-	for i in xrange(100):
-		array.append(random.randint(1,1000000))
-	print merge_sort(array)
+	for i in xrange(1000000):
+		array.append(random.randint(1,100000))
+	before = time.time()
+	merge_sort(array)
+	after = time.time()
+	print after - before
