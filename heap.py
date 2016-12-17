@@ -35,7 +35,6 @@ class Heap(object):
 		return True
 
 	def bubble_down(self,index):
-		#NOTE : REFORMAT THE CODE HERE
 		while index*2 <= self.size:
 			min_index = self.min_child(index)
 			self.heap[index], self.heap[min_index] = self.heap[min_index], self.heap[index]
@@ -66,6 +65,37 @@ class Heap(object):
 
 		return self.size
 
+''' functions to create heap from an existing array 
+	The build function has a complexity of O(n)
+'''
+
+def bubble_down(array,index):
+	size = len(array)
+	while (index*2 + 1) <= size:
+		min_index = min_child(array,index)
+		print array[index], min_index
+		array[index], array[min_index] = array[min_index], array[index]
+		index = min_index
+	return True
+
+def min_child(array,index):
+	size = len(array)
+	if (index*2 + 2) <= size - 1:
+		if array[index*2 + 1] < array[index*2 + 2]:
+			return (index*2 + 1)
+		else:
+			return (index*2 + 2)
+	else:
+		return (index*2 + 1)
+
+
+def build(array):
+	size = len(array)
+	for i in xrange(size//2, 0,-1):
+		print array[i]
+		bubble_down(array, i)
+	return array
+
 
 
 def heapsort(array):
@@ -82,11 +112,11 @@ def heapsort(array):
 	return new_one
 
 if __name__ == '__main__':
-
 	array = []
-
-	for i in xrange(1000):
+	for i in xrange(10):
 
 		array.append(random.randint(1,10000))
 
-	heapsort(array)
+	print array
+	build(array)
+	print array
