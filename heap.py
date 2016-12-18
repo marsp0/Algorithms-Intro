@@ -100,27 +100,31 @@ def build(array):
 		bubble_down(array, i)
 	return array
 
+def extract(array):
+	
+	to_return = array[0]
+	if len(array) == 1:
+		pass
+	else:
+		array[0] = array.pop(-1)
+		bubble_down(array,0)
+	return to_return
 
 
 def heapsort(array):
-
-	p = Heap()
 	new_one = []
-	for i in array:
-		p.insert(i)
+	build(array)
 	before = time.time()
 	for index in xrange(len(array)):
-		new_one.append(p.extract_min())
+		new_one.append(extract(array))
 	after = time.time()
 	print after - before
 	return new_one
 
 if __name__ == '__main__':
 	array = []
-	for i in xrange(10000):
+	for i in xrange(10):
 
 		array.append(random.randint(1, 100000))
 
-	print array
-	build(array)
-	print array
+	print heapsort(array)
