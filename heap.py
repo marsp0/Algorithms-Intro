@@ -71,28 +71,32 @@ class Heap(object):
 
 def bubble_down(array,index):
 	size = len(array)
-	while (index*2 + 1) <= size:
+	while (index*2 + 2) <= size:
 		min_index = min_child(array,index)
-		print array[index], min_index
-		array[index], array[min_index] = array[min_index], array[index]
-		index = min_index
+		if min_index != False:
+			array[index], array[min_index] = array[min_index], array[index]
+			index = min_index
+		else:
+			break
 	return True
 
 def min_child(array,index):
 	size = len(array)
-	if (index*2 + 2) <= size - 1:
-		if array[index*2 + 1] < array[index*2 + 2]:
-			return (index*2 + 1)
-		else:
-			return (index*2 + 2)
+	if (index*2 + 2) < size:
+		if array[index*2 + 1] < array[index] or array[index*2 + 2] < array[index]:
+			if array[index*2 + 1] < array[index*2 + 2]:
+				return (index*2 + 1)
+			else:
+				return (index*2 + 2)
 	else:
-		return (index*2 + 1)
+		if array[index*2 + 1] < array[index]:
+			return (index*2 + 1)
+	return False
 
 
 def build(array):
 	size = len(array)
-	for i in xrange(size//2, 0,-1):
-		print array[i]
+	for i in xrange((size)//2, -1,-1):
 		bubble_down(array, i)
 	return array
 
@@ -113,9 +117,9 @@ def heapsort(array):
 
 if __name__ == '__main__':
 	array = []
-	for i in xrange(10):
+	for i in xrange(10000):
 
-		array.append(random.randint(1,10000))
+		array.append(random.randint(1, 100000))
 
 	print array
 	build(array)
