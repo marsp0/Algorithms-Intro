@@ -26,3 +26,7 @@ class Graph(object):
 			del self._graph[vert_1]
 			del self._degree[vert_1]
 			self._size -= 1
+
+	def breadth_first(self):
+
+		pass
