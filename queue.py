@@ -38,6 +38,10 @@ class DoubleQueue(object):
 		else:
 			return False
 
+	def is_empty(self):
+
+		return self._len == 0
+
 
 	def __len__(self):
 
