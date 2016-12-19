@@ -28,5 +28,25 @@ class Graph(object):
 			self._size -= 1
 
 	def breadth_first(self):
-
 		pass
+		
+
+class Vertex(object):
+
+	def __init__(self, name):
+
+		self.name = name
+		self.distance = -1
+		self.parent = None
+
+	def __hash__(self):
+
+		return hash(self.name)
+
+	def __eq__(self,other):
+
+		return self.name == other.name
+
+	def __ne__(self,other):
+
+		return not(self == other)
