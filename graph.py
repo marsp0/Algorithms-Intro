@@ -1,4 +1,5 @@
 from queue import DoubleQueue as Queue
+from stack import Stack
 
 class Graph(object):
 
@@ -40,7 +41,6 @@ class Graph(object):
 		for item in self._graph.values():
 			item.distance = 0
 		queue.enqueue(self._graph[root])
-		print queue.is_empty()
 		while not (queue.is_empty()):
 			current = queue.dequeue()
 			for node in current.edges:
@@ -51,6 +51,11 @@ class Graph(object):
 					node.distance = current.distance + 1
 					node.parent = current
 					queue.enqueue(node)
+
+	def depth_first(self, root):
+
+		stack = Stack()
+		pass
 
 
 		
@@ -64,7 +69,7 @@ class Vertex(object):
 		self.edges = []
 
 	def __repr__(self):
-		return '{}'.format(self.name)
+		return '{}'.format(str(self.name))
 
 
 if __name__ == '__main__':
@@ -80,4 +85,5 @@ if __name__ == '__main__':
 	graph.add('c','d')
 	graph.add('A','D')
 	graph.breadth_first('b')
-	print graph._graph['d'].distance
+	for item in graph._graph.values():
+		print item.name, item.parent
