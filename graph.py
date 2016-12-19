@@ -37,18 +37,17 @@ class Graph(object):
 	def breadth_first(self,root):
 		#create the queue
 		queue = Queue()
-		#set the root distance to 0, I dont think that we need to do 
-		#an iteration here just to set the distance of every root to nill/infinity
-		self._graph[root].distance = 0
+		for item in self._graph.values():
+			item.distance = 0
 		queue.enqueue(self._graph[root])
 		print queue.is_empty()
 		while not (queue.is_empty()):
 			current = queue.dequeue()
-			print current
 			for node in current.edges:
+				#the iteration is over the edge list which is just strings
+				#so we need the actual nodes.
 				node = self._graph[node]
 				if node.distance == 0:
-					print node.name
 					node.distance = current.distance + 1
 					node.parent = current
 					queue.enqueue(node)
@@ -81,3 +80,4 @@ if __name__ == '__main__':
 	graph.add('c','d')
 	graph.add('A','D')
 	graph.breadth_first('b')
+	print graph._graph['d'].distance
