@@ -13,10 +13,12 @@ class Graph(object):
 		vert_1 = vert_1.lower()
 		if vert_2 != None:
 			vert_2 = vert_2.lower()
-			self._graph[vert_1].edges.append(vert_2)
-			self._graph[vert_2].edges.append(vert_1)
-			self._degree[vert_1] += 1
-			self._degree[vert_2] += 1
+			vert_1 = vert_1.lower()
+			if not (vert_2 in self._graph[vert_1].edges) :
+				self._graph[vert_1].edges.append(vert_2)
+				self._graph[vert_2].edges.append(vert_1)
+				self._degree[vert_1] += 1
+				self._degree[vert_2] += 1
 		else:
 			self._graph[vert_1] = Vertex(vert_1)
 			self._size += 1
@@ -55,8 +57,18 @@ class Graph(object):
 	def depth_first(self, root):
 
 		stack = Stack()
-		pass
-
+		for item in self._graph.values():
+			item.state = None
+		stack.push(root)
+		counter = 0
+		while not (stack.is_empty()):
+			node = self._graph[stack.pop()]
+			if node.state == None:
+				node.state = 'discovered + {}'.format(counter)
+				print node.edges, node.name
+				for item in node.edges:
+					stack.push(item)
+				counter += 1
 
 		
 
@@ -65,6 +77,7 @@ class Vertex(object):
 	def __init__(self,name):
 		self.name = name
 		self.distance = 0
+		self.state = None
 		self.parent = None
 		self.edges = []
 
@@ -80,10 +93,22 @@ if __name__ == '__main__':
 	
 	graph.add('C')
 	graph.add('D')
+	graph.add('e')
+	graph.add('f')
+	graph.add('g')
+	graph.add('h')
+	graph.add('i')
+	graph.add('a','b')
+	graph.add('a','e')
+	graph.add('a','h')
 	graph.add('a','b')
 	graph.add('b','c')
+	graph.add('b','h')
 	graph.add('c','d')
+	graph.add('c','i')
+	graph.add('e','f')
+	graph.add('h','g')
 	graph.add('A','D')
-	graph.breadth_first('b')
+	graph.depth_first('b')
 	for item in graph._graph.values():
-		print item.name, item.parent
+		print item.state, item.name
