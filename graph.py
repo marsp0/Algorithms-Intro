@@ -92,6 +92,12 @@ class Graph(object):
 				counter += 1
 
 	def is_acyclic(self, root):
+		'''
+			this algorithm checks for back edges and returns True if there are any in the graph
+			
+			IMPORTANT : if we start at an edge that is not connected to the cycle the function will return False
+			TODO : improve the function to take into account all the edges
+		'''
 		self._graph[root].start_processing = self.time
 		self.time += 1
 		self._graph[root].state = 'discovered'
@@ -103,9 +109,9 @@ class Graph(object):
 
 		for node in self._graph:
 			for item in self._graph[node].edges:
-				if self._graph[item].start_processing < self._graph[node].start_processing and self._graph[item].end_processing > self._graph[node].end_processing:
+				if self._graph[node].start_processing > self._graph[item].start_processing and self._graph[item].end_processing > self._graph[node].end_processing:
 					return True
-				return False
+		return False
 
 class Vertex(object):
 
@@ -139,5 +145,5 @@ if __name__ == '__main__':
 	graph.add('c','e')
 	graph.add('c','f')
 	graph.add('e','d')
-	#graph.add('d','b')
-	print graph.is_acyclic('a')
+	graph.add('d','b')
+	print graph.is_acyclic('b')
