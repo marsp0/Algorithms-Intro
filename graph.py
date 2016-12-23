@@ -9,7 +9,7 @@ class Graph(object):
 		self._size = 0
 		self._degree = {}
 		self._directed = directed
-		self._cylce = []
+		self.time = 0
 
 	def add(self,vert_1, vert_2=None):
 		vert_1 = vert_1.lower()
@@ -27,10 +27,6 @@ class Graph(object):
 			self._graph[vert_1] = Vertex(vert_1)
 			self._size += 1
 			self._degree[vert_1] = 1
-
-			#NOTE : need to figure out how to remove nodes from the graph
-			# and then the corresponding list element
-			self._cylce.append(False)
 		return True
 
 	def remove(self,vert_1,vert_2=None):
@@ -81,9 +77,6 @@ class Graph(object):
 			3. Forward
 			4. Cross
 
-			the tree is covered in the if node.state == None
-			the rest of them are in the else and we are interested in the back ones
-
 		'''
 		stack = Stack()
 		for item in self._graph.values():
@@ -92,16 +85,27 @@ class Graph(object):
 		counter = 0
 		while not (stack.is_empty()):
 			node = self._graph[stack.pop()]
-			node.start_processing = True
 			if node.state == None:
 				node.state = 'discovered + {}'.format(counter)
-				node.start_processing = True
 				for item in node.edges:
 					stack.push(item)
 				counter += 1
-			else:
-				pass
-		
+
+	def is_acyclic(self, root):
+		self._graph[root].start_processing = self.time
+		self.time += 1
+		self._graph[root].state = 'discovered'
+		for node in self._graph[root].edges:
+			if self._graph[node].state == None:
+				self.is_acyclic(node)
+		self._graph[root].end_processing = self.time
+		self.time += 1
+
+		for node in self._graph:
+			for item in self._graph[node].edges:
+				if self._graph[item].start_processing < self._graph[node].start_processing and self._graph[item].end_processing > self._graph[node].end_processing:
+					return True
+				return False
 
 class Vertex(object):
 
@@ -111,8 +115,8 @@ class Vertex(object):
 		self.distance = 0
 		#DFS
 		self.state = None
-		self.start_processing = False
-		self.finish_processing = False
+		self.start_processing = 0
+		self.end_processing = 0
 
 		self.parent = None
 		self.edges = []
@@ -130,14 +134,10 @@ if __name__ == '__main__':
 	graph.add('e')
 	graph.add('f')
 	graph.add('a','b')
-	graph.add('a','d')
+	graph.add('d','a')
 	graph.add('b','e')
 	graph.add('c','e')
 	graph.add('c','f')
 	graph.add('e','d')
-	graph.add('d','b')
-	for item in graph._graph.keys():
-		print item
-		graph.depth_first(item)
-	for item in graph._graph.values():
-		print item.state, item.name
+	#graph.add('d','b')
+	print graph.is_acyclic('a')
