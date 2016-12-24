@@ -17,8 +17,6 @@ class Graph(object):
 			vert_2 = vert_2.lower()
 			if not (vert_2 in self._graph[vert_1].edges) :
 				self._graph[vert_1].edges.append(vert_2)
-				#set the name for the DFS
-				self._graph[vert_2].parent = self._graph[vert_1].name
 				if not self.is_directed():
 					self._graph[vert_2].edges.append(vert_1)
 					self._degree[vert_2] += 1
@@ -51,7 +49,6 @@ class Graph(object):
 		queue = Queue()
 		for item in self._graph.values():
 			item.distance = 0
-			item.parent = None
 		queue.enqueue(self._graph[root])
 		while not (queue.is_empty()):
 			current = queue.dequeue()
@@ -61,7 +58,6 @@ class Graph(object):
 				node = self._graph[node]
 				if node.distance == 0:
 					node.distance = current.distance + 1
-					node.parent = current
 					queue.enqueue(node)
 
 	def depth_first(self, root):
@@ -161,7 +157,6 @@ class Vertex(object):
 		self.start_processing = 0
 		self.end_processing = 0
 
-		self.parent = None
 		self.edges = []
 
 	def __repr__(self):
