@@ -91,6 +91,10 @@ class Graph(object):
 					stack.push(item)
 				counter += 1
 
+	#
+	#Acyclic functions
+	#
+	
 	def is_acyclic(self):
 		for node in self._graph.keys():
 			acyclic = self.is_acyclic_util(node)
@@ -114,7 +118,12 @@ class Graph(object):
 					return True
 		return False
 
+	#
+	#Topological sorting functions
+	#
+
 	def topological_sort(self):
+		#we cannot topologicaly sort a graph if it is not a DAG
 		if not self.is_acyclic(): 
 			visited = {}
 			for i in self._graph:
@@ -139,6 +148,7 @@ class Graph(object):
 			if visited[item] == False:
 				self.topological_sort_util(item,visited,stack)
 		stack.push(node)
+
 
 class Vertex(object):
 
