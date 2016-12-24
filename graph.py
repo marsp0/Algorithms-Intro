@@ -91,13 +91,20 @@ class Graph(object):
 					stack.push(item)
 				counter += 1
 
-	def is_acyclic(self, root):
+	def is_acyclic(self):
+		for node in self._graph.keys():
+			acyclic = self.is_acyclic_util(node)
+			if acyclic == True:
+				return True
+		return False
+
+	def is_acyclic_util(self, root):
 		self._graph[root].start_processing = self.time
 		self.time += 1
 		self._graph[root].state = 'discovered'
 		for node in self._graph[root].edges:
 			if self._graph[node].state == None:
-				self.is_acyclic(node)
+				self.is_acyclic_util(node)
 		self._graph[root].end_processing = self.time
 		self.time += 1
 
@@ -108,7 +115,7 @@ class Graph(object):
 		return False
 
 	def topological_sort(self):
-		if not self.is_acyclic('a'): 
+		if not self.is_acyclic(): 
 			visited = {}
 			for i in self._graph:
 				visited[i] = False
@@ -166,4 +173,4 @@ if __name__ == '__main__':
 	graph.add('c','f')
 	graph.add('e','d')
 	#graph.add('d','b')
-	print graph.topological_sort().traverse()
+	print graph.is_acyclic()
