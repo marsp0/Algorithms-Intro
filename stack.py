@@ -30,10 +30,12 @@ class Stack(object):
 	def traverse(self):
 		counter = self.size
 		current = self.top
+		to_return = []
 		while counter > 0:
-			print current.data
+			to_return.append(current.data)
 			current = current.next_node
 			counter -= 1
+		return to_return
 
 	def is_empty(self):
 		return self.size == 0
