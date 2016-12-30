@@ -13,8 +13,13 @@ class WeightedGraph(object):
 		'''
 
 		temp_edges = [self.edges.pop(0)]
-		temp_vertices = [vertex for vertex in temp_edges[0]]
+		temp_vertices = [vertex for vertex in temp_edges[0]] #we add the first edge in order to have some base
+		#iterate over the rest
 		for edge in self.edges:
+			#instead of making find-set function we can just do it here
+			#if the two are different, then it means, that one of the vertices is not
+			#in the list and so we just add it
+			#if they are both present, then we just skip to avoid cycles
 			first = edge[0] in temp_vertices
 			second = edge[1] in temp_vertices
 			if not ( first and second):
@@ -36,6 +41,9 @@ class WeightedGraph(object):
 		less_than_edges = []
 		greater_than_edges = []
 		pivot_edges = []
+
+		#NOTE : is it possible to make it in place ?
+		# is the place taken too much ?
 
 		if len(weights) < 1:
 			return weights,edges
