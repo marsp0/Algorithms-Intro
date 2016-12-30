@@ -1,17 +1,30 @@
 class WeightedGraph(object):
 
-	def __init__(self, vertices, edges, weights):
+	def __init__(self, vertices, weights, edges):
 
-		self.edges = edges
-		self.weights = weights
+		self.weights, self.edges = self.sort_edges(weights,edges)
 		self.vertices = vertices
-	
+
 	def get_mst_kruskal(self):
 
 		''' The idea is the following, we start iterating over the sorted edges and
 			and if the edge is not in the temp list, then this means that we can add it,
 			if it is, it means that it is a cycle and so we skip it.
 		'''
+
+		temp_edges = [self.edges.pop(0)]
+		temp_vertices = [vertex for vertex in temp_edges[0]]
+		for edge in self.edges:
+			first = edge[0] in temp_vertices
+			second = edge[1] in temp_vertices
+			if not ( first and second):
+				temp_edges.append(edge)
+				if not first:
+					temp_vertices.append(edge[0])
+				else:
+					temp_vertices.append(edge[1])
+		return temp_edges
+
 
 	def sort_edges(self,weights,edges):
 
@@ -52,5 +65,9 @@ class WeightedGraph(object):
 
 if __name__ == '__main__':
 
-	p = WeightedGraph([1,2,3,4,5,6],[(1,2),(1,3),(2,4), (3,6),(5,6),(1,5)], [1,3,2,12,3,7])
-	print p.sort_edges([1,3,2,12,3,7] , [(1,2),(1,3),(2,4), (3,6),(5,6),(1,5)] )
+	weights = [1,2,3,4,5,6,1]
+	edges = [(1,2),(1,3),(3,6),(2,4),(2,6),(4,5),(2,3)]
+	vertices = [1,2,3,4,5,6]
+
+	p = WeightedGraph(vertices,weights,edges)
+	print p.get_mst_kruskal()
