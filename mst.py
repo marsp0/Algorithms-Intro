@@ -2,8 +2,9 @@ class WeightedGraph(object):
 
 	def __init__(self, vertices, weights, edges):
 
-		self.weights, self.edges = self.sort_edges(weights,edges)
 		self.vertices = vertices
+		self.weights = weights
+		self.edges = edges
 
 	def get_mst_kruskal(self):
 
@@ -11,6 +12,8 @@ class WeightedGraph(object):
 			and if the edge is not in the temp list, then this means that we can add it,
 			if it is, it means that it is a cycle and so we skip it.
 		'''
+
+		self.weights, self.edges = self.sort_edges(weights,edges)
 
 		temp_edges = [self.edges.pop(0)]
 		temp_vertices = [vertex for vertex in temp_edges[0]] #we add the first edge in order to have some base
@@ -71,6 +74,63 @@ class WeightedGraph(object):
 			greater_than, greater_than_edges = self.sort_edges(greater_than,greater_than_edges)
 		return (less_than + pivot_list + greater_than, less_than_edges + pivot_edges + greater_than_edges)
 
+	def get_mst_prim(self):
+		edges = []
+		#create a heap from the edges list
+		for i in xrange(len(self.weights)):
+			edges.append((self.vertices[i],self.edges[i],self.weights[i]))
+		print edges
+		reached_vertices = {}
+		for vertex in self.vertices:
+			reached_vertices[vertex] = False
+
+
+##############################################
+#		copied from the heap.py
+##############################################
+		
+def bubble_down(array,index):
+	size = len(array)
+	while (index*2 + 2) <= size:
+		min_index = min_child(array,index)
+		if min_index != False:
+			array[index], array[min_index] = array[min_index], array[index]
+			index = min_index
+		else:
+			break
+	return True
+
+def min_child(array,index):
+	size = len(array)
+	if (index*2 + 2) < size:
+		if array[index*2 + 1][2] < array[index][2] or array[index*2 + 2][2] < array[index][2]:
+			if array[index*2 + 1][2] < array[index*2 + 2][2]:
+				return (index*2 + 1)
+			else:
+				return (index*2 + 2)
+	else:
+		if array[index*2 + 1][2] < array[index][2]:
+			return (index*2 + 1)
+	return False
+
+
+def build(array):
+	size = len(array)
+	for i in xrange((size)//2, -1,-1):
+		bubble_down(array, i)
+	return array
+
+def extract(array):
+	
+	to_return = array[0]
+	if len(array) == 1:
+		pass
+	else:
+		array[0] = array.pop(-1)
+		bubble_down(array,0)
+	return to_return
+
+
 if __name__ == '__main__':
 
 	weights = [1,2,3,4,5,6,1]
@@ -78,4 +138,4 @@ if __name__ == '__main__':
 	vertices = [1,2,3,4,5,6]
 
 	p = WeightedGraph(vertices,weights,edges)
-	print p.get_mst_kruskal()
+	print p.get_mst_prim()
