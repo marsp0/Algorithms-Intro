@@ -77,14 +77,10 @@ class WeightedGraph(object):
 		return (less_than + pivot_list + greater_than, less_than_edges + pivot_edges + greater_than_edges)
 
 	def get_mst_prim(self):
-		edges = []
-		#create a heap from the edges list
-		for i in xrange(len(self.weights)):
-			edges.append((self.vertices[i],self.edges[i],self.weights[i]))
-		print edges
-		reached_vertices = {}
-		for vertex in self.vertices:
-			reached_vertices[vertex] = False
+		graph_list = self.create_vertices()
+		graph_list = build(graph_list)
+		for i in xrange(len(graph_list)):
+			print extract(graph_list).min_weight
 
 	def create_vertices(self):
 		to_return = []
@@ -133,13 +129,13 @@ def bubble_down(array,index):
 def min_child(array,index):
 	size = len(array)
 	if (index*2 + 2) < size:
-		if array[index*2 + 1][2] < array[index][2] or array[index*2 + 2][2] < array[index][2]:
-			if array[index*2 + 1][2] < array[index*2 + 2][2]:
+		if array[index*2 + 1].min_weight < array[index].min_weight or array[index*2 + 2].min_weight < array[index].min_weight:
+			if array[index*2 + 1].min_weight < array[index*2 + 2].min_weight:
 				return (index*2 + 1)
 			else:
 				return (index*2 + 2)
 	else:
-		if array[index*2 + 1][2] < array[index][2]:
+		if array[index*2 + 1].min_weight < array[index].min_weight:
 			return (index*2 + 1)
 	return False
 
