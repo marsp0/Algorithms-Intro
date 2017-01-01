@@ -1,3 +1,5 @@
+import sys
+
 class WeightedGraph(object):
 
 	def __init__(self, vertices, weights, edges):
@@ -84,9 +86,37 @@ class WeightedGraph(object):
 		for vertex in self.vertices:
 			reached_vertices[vertex] = False
 
+	def create_vertices(self):
+		to_return = []
+		for vertex in self.vertices:
+			edge_list = []
+			min_weight = sys.maxsize
+			for index in xrange(len(self.edges)):
+				if vertex in self.edges[index]:
+					if self.weights[index] < min_weight:
+						min_weight = self.weights[index]
+					if self.edges[index][0] == vertex:
+						edge_list.append(self.edges[index][1])
+					else:
+						edge_list.append(self.edges[index][0])
+
+			vert = Vertex(vertex,edge_list,min_weight)	
+			to_return.append(vert)
+		return to_return			
+
+
+class Vertex(object):
+
+	def __init__(self,name,edges,min_weight):
+
+		self.name = name
+		self.edges = edges
+		self.min_weight = min_weight
 
 ##############################################
 #		copied from the heap.py
+#		modified to use the heap structure
+#		with VertexObject
 ##############################################
 		
 def bubble_down(array,index):
