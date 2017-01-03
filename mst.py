@@ -95,12 +95,11 @@ class WeightedGraph(object):
 		print usable
 		while usable:
 			first, second, weight = extract(usable)
-			print first, second, weight
+			#first one is the one being checked
 			if second not in used:
 				used.add(second)
 				mst.append((first,second,weight))
 				for edge in graph_dict[second]:
-					#print edge[1]
 					if edge[1] not in used:
 						insert(usable,edge)
 			print usable
