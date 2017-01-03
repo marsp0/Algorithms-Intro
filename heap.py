@@ -101,14 +101,26 @@ def build(array):
 	return array
 
 def extract(array):
-	
-	to_return = array[0]
 	if len(array) == 1:
-		pass
+		return	array.pop()
 	else:
+		to_return = array[0]
 		array[0] = array.pop(-1)
 		bubble_down(array,0)
 	return to_return
+
+def insert(array,element):
+
+	array.append(element)
+	bubble_up(array, len(array)-1)
+	return True
+
+def bubble_up(array,index):
+	while (index - 1)// 2 >= 0:
+		if array[index][2] < array[(index - 1)//2][2]:
+			array[index], array[(index - 1)//2] = array[(index - 1)//2], array[index]
+		index = (index - 1) // 2
+	return True
 
 
 def heapsort(array):

@@ -1,4 +1,5 @@
 import sys
+from collections import defaultdict
 
 class WeightedGraph(object):
 
@@ -76,40 +77,42 @@ class WeightedGraph(object):
 		return (less_than + pivot_list + greater_than, less_than_edges + pivot_edges + greater_than_edges)
 
 	def get_mst_prim(self):
-		#NOTE : sadly i use two structures in order to be able to search in O(1)
-		#NOTE : Is it possible to reduce that to 1 structure ?
-		#NOTE : is adjacency matric better here ? 
-		graph = self.create_vertices()
-		graph_heap = build(graph)
-		while len(graph_heap) != 0:
-			print len(graph_heap)
-			root = extract(graph_heap)
-			for edge in root.edges:
-				print edge
-
-	def create_vertices(self):
-		to_return = []
-		for vertex in self.vertices:
-			edge_list = []
-			min_weight = sys.maxsize
-			for index in xrange(len(self.edges)):
-				if vertex in self.edges[index]:
-					if self.edges[index][0] == vertex:
-						edge_list.append((self.edges[index][1],self.weights[index]))
-					else:
-						edge_list.append((self.edges[index][0],self.weights[index]))
-			vert = Vertex(vertex,edge_list,min_weight)	
-			to_return.append(vert)
-		return to_return			
-
+		#
+		# Thank God for this article : https://programmingpraxis.com/2010/04/09/minimum-spanning-tree-prims-algorithm/
+		#
+		#build the dict
+		graph_dict = defaultdict(list)
+		for index in xrange(len(self.edges)):
+			first, second = self.edges[index]
+			weight = self.weights[index]
+			graph_dict[first].append((first,second,weight))
+			graph_dict[second].append((second,first,weight))
+		mst = []
+		print self.vertices[0]
+		used = set([self.vertices[0]])
+		usable = graph_dict[self.vertices[0]]
+		usable = build(usable)
+		print usable
+		while usable:
+			first, second, weight = extract(usable)
+			print first, second, weight
+			if second not in used:
+				used.add(second)
+				mst.append((first,second,weight))
+				for edge in graph_dict[second]:
+					#print edge[1]
+					if edge[1] not in used:
+						insert(usable,edge)
+			print usable
+		return mst
 
 class Vertex(object):
 
-	def __init__(self,name,edges,min_weight):
+	def __init__(self,name,edges):
 
 		self.name = name
 		self.edges = edges
-		self.min_weight = min_weight
+
 
 ##############################################
 #		copied from the heap.py
@@ -131,13 +134,13 @@ def bubble_down(array,index):
 def min_child(array,index):
 	size = len(array)
 	if (index*2 + 2) < size:
-		if array[index*2 + 1].min_weight < array[index].min_weight or array[index*2 + 2].min_weight < array[index].min_weight:
-			if array[index*2 + 1].min_weight < array[index*2 + 2].min_weight:
+		if array[index*2 + 1][2] < array[index][2] or array[index*2 + 2][2] < array[index][2]:
+			if array[index*2 + 1][2] < array[index*2 + 2][2]:
 				return (index*2 + 1)
 			else:
 				return (index*2 + 2)
 	else:
-		if array[index*2 + 1].min_weight < array[index].min_weight:
+		if array[index*2 + 1][2] < array[index][2]:
 			return (index*2 + 1)
 	return False
 
@@ -157,11 +160,24 @@ def extract(array):
 		bubble_down(array,0)
 	return to_return
 
+def insert(array,element):
+
+	array.append(element)
+	bubble_up(array, len(array)-1)
+	return True
+
+def bubble_up(array,index):
+	while (index - 1)// 2 >= 0:
+		if array[index][2] < array[(index - 1)//2][2]:
+			array[index], array[(index - 1)//2] = array[(index - 1)//2], array[index]
+		index = (index - 1) // 2
+	return True
+
 
 if __name__ == '__main__':
 
 	weights = [1,2,3,4,5,6,1]
-	edges = [(1,2),(1,3),(3,6),(2,4),(2,6),(4,5),(2,3)]
+	edges = [(1,6),(1,4),(3,1),(2,5),(2,1),(4,5),(2,3)]
 	vertices = [1,2,3,4,5,6]
 
 	p = WeightedGraph(vertices,weights,edges)
