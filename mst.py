@@ -35,7 +35,6 @@ class WeightedGraph(object):
 					temp_vertices.append(edge[1])
 		return temp_edges
 
-
 	def sort_edges(self,weights,edges):
 
 		#the lists for the weights division
@@ -77,10 +76,16 @@ class WeightedGraph(object):
 		return (less_than + pivot_list + greater_than, less_than_edges + pivot_edges + greater_than_edges)
 
 	def get_mst_prim(self):
-		graph_list = self.create_vertices()
-		graph_list = build(graph_list)
-		for i in xrange(len(graph_list)):
-			print extract(graph_list).min_weight
+		#NOTE : sadly i use two structures in order to be able to search in O(1)
+		#NOTE : Is it possible to reduce that to 1 structure ?
+		#NOTE : is adjacency matric better here ? 
+		graph = self.create_vertices()
+		graph_heap = build(graph)
+		while len(graph_heap) != 0:
+			print len(graph_heap)
+			root = extract(graph_heap)
+			for edge in root.edges:
+				print edge
 
 	def create_vertices(self):
 		to_return = []
@@ -89,13 +94,10 @@ class WeightedGraph(object):
 			min_weight = sys.maxsize
 			for index in xrange(len(self.edges)):
 				if vertex in self.edges[index]:
-					if self.weights[index] < min_weight:
-						min_weight = self.weights[index]
 					if self.edges[index][0] == vertex:
-						edge_list.append(self.edges[index][1])
+						edge_list.append((self.edges[index][1],self.weights[index]))
 					else:
-						edge_list.append(self.edges[index][0])
-
+						edge_list.append((self.edges[index][0],self.weights[index]))
 			vert = Vertex(vertex,edge_list,min_weight)	
 			to_return.append(vert)
 		return to_return			
@@ -147,11 +149,10 @@ def build(array):
 	return array
 
 def extract(array):
-	
-	to_return = array[0]
 	if len(array) == 1:
-		pass
+		return	array.pop()
 	else:
+		to_return = array[0]
 		array[0] = array.pop(-1)
 		bubble_down(array,0)
 	return to_return
