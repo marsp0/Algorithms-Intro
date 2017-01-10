@@ -33,3 +33,47 @@
 	     = O(V^3)  #E = O(V^2)
 
 '''
+
+import sys
+
+vert_structure = {}
+
+def bellman_ford(vertices, edges):
+	#initialization
+	for vertex in vertices:
+		vert = Vertex(vertex)
+		vert_structure[vertex] = vert
+	#build the actual shortest path
+	for i in xrange(len(vertices)):
+		for edge in edges:
+			relax(edge)
+	#check for cycles
+	for edge in edges:
+		first = edge[0]
+		second = edge[1]
+		weight = edge[2]
+		if vert_structure[second].current_min_weight > vert_structure[first].current_min_weight + weight:
+			return False
+	return True
+
+def relax(edge):
+	first = edge[0]
+	second = edge[1]
+	weight = edge[2]
+	if vert_structure[second].current_min_weight > vert_structure[first].current_min_weight + weight:
+		vert_structure[second].current_min_weight = vert_structure[first].current_min_weight + weight
+		vert_structure[second] = first.name
+
+class Vertex(object):
+
+	def __init__(self,name):
+
+		self.name = name
+		self.current_min_weight = sys.maxsize
+		self.predecessor = None
+
+if __name__ == '__main__':
+
+	vertices = [1,2,3,4,5]
+	edges = [(1,2,5), (1,3,3), (2,3,1), (1,4,2), (1,6,1), (2,5,4), (4,5,6)]
+	bellman_ford(vertices,edges)
