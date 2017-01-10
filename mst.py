@@ -88,11 +88,9 @@ class WeightedGraph(object):
 			graph_dict[first].append((first,second,weight))
 			graph_dict[second].append((second,first,weight))
 		mst = []
-		print self.vertices[0]
 		used = set([self.vertices[0]])
 		usable = graph_dict[self.vertices[0]]
 		usable = build(usable)
-		print usable
 		while usable:
 			first, second, weight = extract(usable)
 			#first one is the one being checked
