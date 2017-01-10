@@ -38,13 +38,14 @@ import sys
 
 vert_structure = {}
 
-def bellman_ford(vertices, edges):
+def bellman_ford(vertices, edges, source):
 	#initialization
 	for vertex in vertices:
 		vert = Vertex(vertex)
 		vert_structure[vertex] = vert
+	vert_structure[source].current_min_weight = 0
 	#build the actual shortest path
-	for i in xrange(len(vertices)):
+	for i in xrange(len(vertices) - 1):
 		for edge in edges:
 			relax(edge)
 	#check for cycles
@@ -62,7 +63,7 @@ def relax(edge):
 	weight = edge[2]
 	if vert_structure[second].current_min_weight > vert_structure[first].current_min_weight + weight:
 		vert_structure[second].current_min_weight = vert_structure[first].current_min_weight + weight
-		vert_structure[second] = first.name
+		vert_structure[second].predecessor = vert_structure[first].name
 
 class Vertex(object):
 
@@ -74,6 +75,12 @@ class Vertex(object):
 
 if __name__ == '__main__':
 
-	vertices = [1,2,3,4,5]
+	vertices = [1,2,3,4,5,6]
 	edges = [(1,2,5), (1,3,3), (2,3,1), (1,4,2), (1,6,1), (2,5,4), (4,5,6)]
-	bellman_ford(vertices,edges)
+	bellman_ford(vertices,edges,2)
+	for vert in vert_structure.values():
+		print vert.name
+		print vert.current_min_weight
+		print vert.predecessor
+		print
+		print
