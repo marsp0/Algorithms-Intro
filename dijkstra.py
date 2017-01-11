@@ -43,8 +43,10 @@ def dijkstra(vertices,edges,root):
 		graph[edge[0]].edges.append((edge[1],edge[2]))
 	heap = [[v,sys.maxsize] for v in vertices]
 	heap = build(heap,index_map)
-	index_map[root] = 0
 	heap[index_map[root]][1] = 0
+	graph[root].current_min_weight = 0
+	for item in xrange(len(heap)):
+		index_map[heap[item][0]] = item
 	while heap:
 		current = extract(heap,index_map)
 		node_name = current[0]
@@ -55,8 +57,9 @@ def dijkstra(vertices,edges,root):
 			if graph[edge_name].current_min_weight > graph[node_name].current_min_weight + edge_weight:
 				graph[edge_name].current_min_weight = graph[node_name].current_min_weight + edge_weight
 				graph[edge_name].predecessor = node_name
-				#linear search of the edge in the heap. can we do better ?
-				print heap[index_map[edge_name]][1],  graph[node_name].current_min_weight + edge_weight, 'dsa'
+				heap[index_map[edge_name]][1] =  graph[node_name].current_min_weight + edge_weight
+				bubble_up(heap,index_map[edge_name],index_map)
+	return graph
 
 class Vertex_1(Vertex):
 
@@ -74,13 +77,12 @@ def bubble_down(array,index,index_map):
 	size = len(array)
 	while (index*2 + 2) <= size:
 		min_index = min_child(array,index)
+		index_map[array[min_index][0]] = min_index
 		if min_index != False:
 			array[index], array[min_index] = array[min_index], array[index]
 			index = min_index
 		else:
 			break
-	print array
-	index_map[array[index][0]] = index
 	return True
 
 def min_child(array,index):
@@ -110,7 +112,6 @@ def extract(array,index_map):
 		to_return = array[0]
 		array[0] = array.pop(-1)
 		bubble_down(array,0,index_map)
-		del index_map[to_return[0]]
 	return to_return
 
 def insert(array,element,index_map):
@@ -129,5 +130,12 @@ def bubble_up(array,index,index_map):
 
 if __name__ == '__main__':
 	vertices = [1,2,3,4,5,6]
-	edges = [(1,2,1),(1,4,2),(2,3,4),(2,4,4),(2,6,2),(1,5,3),(5,3,1)]
-	print dijkstra(vertices,edges,1)
+	edges = [(1,2,1),(1,4,2),(2,3,1),(2,4,4),(2,6,2),(1,5,3),(5,3,1)]
+	graph = dijkstra(vertices,edges,1)
+	for item in graph.values():
+		print item.name, 'name'
+		print item.current_min_weight
+		print item.predecessor ,'predecessor'
+		print item.edges
+		print
+		print
