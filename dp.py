@@ -1,6 +1,21 @@
 '''
 	Dynamic Programming
 
+	DP - 'careful brute force'
+	DP - guessing + recursion + memoization
+	dp - its kinda like shortest paths in a DAG. The hard part is to find the DAG
+
+	Complexity:
+
+	#subproblems * time per subproblem 
+
+	5 Steps to use with DP (not necesseraly sequential)
+
+		1. Define subproblems
+		2. Guess (typically the solution)
+		3. Relate subproblem solutions (using recurrence)
+		4. Recurse and memoize (top-down or bottom-up)
+		5. Solve the original problem
 
 '''
 
