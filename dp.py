@@ -73,28 +73,16 @@ def fibonacci_iter(n):
 
 def longest_common_sequence(string_a, string_b):
 	memo = {}
-	for i in xrange(string_a):
-		memo[-1,]
+	for i in xrange(len(string_a)):
+		memo[(i,-1)] = 0
+	for j in xrange(len(string_b)):
+		memo[(-1,j)] = 0
 	for i in xrange(len(string_a)):
 		for j in xrange(len(string_b)):
-			print memo
-			if i == 0 and j == 0:
-				if string_a[i] == string_b[j]:
-					memo[(i,j)] = 1
-				else:
-					memo[(i,j)] = 0
+			if string_a[i] == string_b[j]:
+				memo[(i,j)] = 1 + memo[(i-1,j-1)]
 			else:
-				if string_a[i] == string_b[j]:
-					print i-1,j-1
-					memo[(i,j)] = 1 + memo[i-1,j-1]
-				else:
-					first = (i-1,j)
-					second = (i,j-1)
-					if not first in memo:
-						first = (0,0)
-					if not second in memo:
-						second = (0,0)
-					memo[(i,j)] = max(memo[first], memo[second])
+				memo[(i,j)] = max(memo[(i-1,j)], memo[(i,j-1)])
 	return memo
 
 if __name__ == '__main__':
@@ -108,4 +96,8 @@ if __name__ == '__main__':
 	#after_memo = time.time()
 	#print memo_iter
 	#print 'the time after the memo function is ', after_memo - before_memo 
-	print longest_common_sequence('abc','cba')
+	first = 'nakdksandkjnsaklndklsakldjsklajdklsaj'
+	second = 'cbajdsklajkldjsakljdklsamnjkljkajnbcj'
+	memo = longest_common_sequence(first,second)
+	print memo[(len(first)-1, len(second)-1)]
+	
