@@ -85,6 +85,22 @@ def longest_common_sequence(string_a, string_b):
 				memo[(i,j)] = max(memo[(i-1,j)], memo[(i,j-1)])
 	return memo
 
+def edit_distance(string_a,string_b):
+	'''function that checks the edit distance between two strings in O(nm) time '''
+	edit = {}
+	for i in xrange(len(string_a)):
+		edit[(i,-1)] = i
+	for j in xrange(len(string_b)):
+		edit[(-1,j)] = j
+	edit[(-1,-1)] = 0
+	for i in xrange(len(string_a)):
+		for j in xrange(len(string_b)):
+			if string_a[i] == string_b[j]:
+				edit[(i,j)] = min(1+edit[(i-1,j)], 1+edit[(i,j-1)], edit[(i-1,j-1)])
+			else:
+				edit[(i,j)] = min(1+edit[(i-1,j)], 1+edit[(i,j-1)], edit[(i-1,j-1)]+1)
+	return edit
+
 if __name__ == '__main__':
 	#before_exp = time.time()
 	#print fibonacci_exp(38)
@@ -96,8 +112,8 @@ if __name__ == '__main__':
 	#after_memo = time.time()
 	#print memo_iter
 	#print 'the time after the memo function is ', after_memo - before_memo 
-	first = 'nakdksandkjnsaklndklsakldjsklajdklsaj'
-	second = 'cbajdsklajkldjsakljdklsamnjkljkajnbcj'
-	memo = longest_common_sequence(first,second)
-	print memo[(len(first)-1, len(second)-1)]
+	first = 'snowy'
+	second = 'sunny'
+	edit = edit_distance(first,second)
+	print edit[(len(first)-1, len(second)-1)]
 	
