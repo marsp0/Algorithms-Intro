@@ -66,7 +66,7 @@ def increment(y):
 
 
 if __name__ == '__main__':
-	data = [random.randint(1,1000) for x in xrange(10000)]
+	data = [random.randint(1,1000) for x in xrange(100000)]
 	current_time = time.time()
 	data = insertion(data)
 	after_time = time.time()
