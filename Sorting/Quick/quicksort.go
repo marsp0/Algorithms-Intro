@@ -4,7 +4,7 @@
 // 3. if k == last, then array[k] == pivot
 
 // Initialization - prior the the first iteration of the loop, wall = first - 1 and current = first.
-// 1. there are no elements  between first and wall, and no elements between wall + 1 and current - 1.
+// 1. there are no array  between first and wall, and no array between wall + 1 and current - 1.
 // this means that the first 2 points of the invariant are satisfied.
 // The assignment at the beginning of the Partition function satisfies the third point.
 
@@ -16,35 +16,54 @@
 // Termination - at termination, current element is equal to the last element. Therefore every element in the set is in one of the three entries described
 // by the invariant.
 
+// Analysis -
+
 package main
 
 import (
 	"fmt"
+	"math/rand"
+	"sort"
 )
 
 func main() {
-	var array = []int{13, 19, 9, 5, 12, 8, 7, 4, 21, 2, 6, 11}
+	// declarations
+	var (
+		i     int
+		array []int
+	)
+
+	// Logic
+	for i < 100000000 {
+		array = append(array, rand.Int())
+		i++
+	}
 	Quicksort(array, 0, len(array)-1)
-	fmt.Println(array)
+	fmt.Println(sort.IntsAreSorted(array))
+	// fmt.Println(array)
 }
 
 // Quicksort - function that performs the quicksort algorithm
 func Quicksort(array []int, first, last int) {
 	if first < last {
 		var pivot = Partition(array, first, last)
-		// fmt.Printf("%d, %d, %d\n", first, pivot, last)
+		// fmt.Println(array)
 		Quicksort(array, first, pivot-1)
 		Quicksort(array, pivot+1, last)
 	}
 }
 
 // Partition - the function partitions the array into three parts :
-// 1. Elements smaller than the pivot
+// 1. array smaller than the pivot
 // 2. The pivot (there might be more than one value equal to the pivot)
-// 3. Elements larger than the pivot.
+// 3. array larger than the pivot.
 func Partition(array []int, first, last int) int {
-	var pivot = array[last]
-	var wall, current = first - 1, first
+	var (
+		pivotIndex = last
+		pivot      = array[pivotIndex]
+		wall       = first - 1
+		current    = first
+	)
 	for current < last {
 		if array[current] <= pivot {
 			wall++
@@ -52,6 +71,12 @@ func Partition(array []int, first, last int) int {
 		}
 		current++
 	}
-	array[wall+1], array[last] = array[last], array[wall+1]
+	array[wall+1], array[pivotIndex] = array[pivotIndex], array[wall+1]
 	return wall + 1
+}
+
+// GetPivot returns the index of the pivot.
+// The idea of the function is to implement efficient quicksort.
+func GetPivot(array []int) int {
+	return len(array) - 1
 }
