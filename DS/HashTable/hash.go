@@ -40,7 +40,14 @@
 package main
 
 func main() {
-
+	var p = NewDict()
+	var node = &Node{
+		key:      32,
+		data:     "32",
+		next:     nil,
+		previous: nil,
+	}
+	p.Insert(node)
 }
 
 // Item - holds the key and the data associated with a single item
@@ -76,4 +83,166 @@ func (dat *DATable) Insert(item *Item) {
 // O(1)
 func (dat *DATable) Delete(key int) {
 	dat.array[key] = nil
+}
+
+// NewDict - initiates a new dict object.
+func NewDict() Dict {
+	var dict Dict
+	dict.count = 0
+	dict.size = 7
+	dict.array = make([]LinkedList, dict.size)
+	return dict
+}
+
+// Dict struct that implements a hash table with
+// chaining.
+type Dict struct {
+	count int
+	size  int
+	array []LinkedList
+}
+
+// Insert - insertes a node in the hashtable.
+// Expected running time O(1)
+// Worst case - O(n) when we have to resize the array.
+func (dict *Dict) Insert(node *Node) {
+	var index = dict.Hash(node.key)
+
+	dict.array[index].Insert(node)
+	dict.count++
+	if dict.count > dict.size {
+		dict.Resize(true)
+	}
+}
+
+// Get - gets an element from the hashtable in O(1)
+func (dict *Dict) Get(key int) *Node {
+	return dict.array[dict.Hash(key)].Search(key)
+}
+
+// Delete - deletes an element from the has table in O(1)
+func (dict *Dict) Delete(key int) {
+	var index = dict.Hash(key)
+	dict.array[index].Delete(key)
+	dict.count--
+	if dict.count < dict.size/4 {
+		dict.Resize(false)
+	}
+}
+
+// Resize - responsible for the resizing of the array.
+func (dict *Dict) Resize(upwards bool) {
+	var (
+		currentNode *Node
+		newArray    []LinkedList
+	)
+	if upwards {
+		// upsize
+		newArray = make([]LinkedList, dict.size*2)
+		dict.size *= 2
+	} else {
+		// downsize
+		newArray = make([]LinkedList, dict.size/2)
+	}
+	for i := 0; i < len(dict.array); i++ {
+		currentNode = dict.array[i].head
+		for {
+			if currentNode == nil {
+				break
+			} else {
+				var index = dict.Hash(currentNode.key)
+				newArray[index].Insert(currentNode)
+				currentNode = currentNode.Next()
+			}
+		}
+	}
+	dict.array = newArray
+}
+
+// Hash - returns the has value that we are going to use as index
+func (dict *Dict) Hash(key int) int {
+	if dict.size == 0 {
+		return 0
+	}
+	return key % dict.size
+}
+
+// LinkedList - used for the implementation of chaining in hash tables.
+type LinkedList struct {
+	head *Node
+}
+
+// Insert - implements the insertion in the linked list
+// Inserting at beginning is O(1) - current
+// otherwise is O(n)
+// Note :
+// Arrays - Indexing is constant time, insertion is linear.
+// Linked list - indexing is linear, insertion is constant.
+func (list *LinkedList) Insert(value *Node) {
+	if list.head != nil {
+		list.head.previous = value
+		value.next = list.head
+		list.head = value
+	} else {
+		list.head = value
+	}
+}
+
+// Delete - implements the deletion in linked list.
+// Deletion of elements at start is constant time
+// Deletion of arbitrary elements is O(n)
+func (list *LinkedList) Delete(key int) {
+	// declarations
+	var (
+		sentinel    = true
+		currentNode = list.head
+	)
+	for sentinel {
+		if currentNode.key != key {
+			currentNode = currentNode.Next()
+		} else {
+			currentNode.previous.next = currentNode.Next()
+			currentNode.next.previous = currentNode.Previous()
+			sentinel = false
+		}
+	}
+
+}
+
+// Search - searches through the linked list and returns a pointer to the node.
+// Linear time.
+func (list *LinkedList) Search(key int) *Node {
+	var (
+		sentinel    = true
+		currentNode = list.head
+	)
+
+	for sentinel {
+		if currentNode.key == key {
+			return currentNode
+		}
+		currentNode = currentNode.Next()
+		sentinel = false
+	}
+	// As always , it is better to return 2 values in GO
+	return nil
+}
+
+// Node - building block for a linked list.
+// contains pointers to previous and next elements.
+type Node struct {
+	key      int
+	data     string
+	next     *Node
+	previous *Node
+}
+
+// Next - returns a pointer to the next node.
+func (node *Node) Next() *Node {
+	return node.next
+}
+
+// Previous - returns a pointer to the previous node.
+func (node *Node) Previous() *Node {
+	return node.previous
 }
