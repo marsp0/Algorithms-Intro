@@ -3,7 +3,7 @@ import time
 
 
 def bubble(iterable):
-
+	# O(n^2)
 	for i in xrange(len(iterable),0, -1):
 		for j in xrange(0, (i-1)):
 			if iterable[j] > iterable[j+1]:

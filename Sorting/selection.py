@@ -3,6 +3,7 @@ import time
 
 def selection(iterable):
 	'''python implementation of the selection sort'''
+	# O(n^2)
 	len_iterable = len(iterable)
 	for i in xrange(len_iterable):
 		current_min_element = i
