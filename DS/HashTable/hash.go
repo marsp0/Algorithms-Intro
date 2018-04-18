@@ -84,11 +84,16 @@ type Dict struct {
 // Expected running time O(1)
 // Worst case - O(n) when we have to resize the array.
 func (dict *Dict) Insert(node *Node) {
-	var index = dict.Hash(node.key)
-	dict.array[index].Insert(node)
-	dict.count++
-	if dict.count > dict.size {
-		dict.Resize(true)
+	var (
+		index = dict.Hash(node.key)
+		val   = dict.Get(node.key)
+	)
+	if val == nil {
+		dict.array[index].Insert(node)
+		dict.count++
+		if dict.count > dict.size {
+			dict.Resize(true)
+		}
 	}
 }
 
