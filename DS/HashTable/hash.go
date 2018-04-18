@@ -39,50 +39,28 @@
 // Open Addressing
 package main
 
+import (
+	"fmt"
+	"math/rand"
+)
+
 func main() {
 	var p = NewDict()
-	var node = &Node{
-		key:      32,
-		data:     "32",
-		next:     nil,
-		previous: nil,
+	for i := 0; i < 20; i++ {
+		var node = &Node{
+			key:      i,
+			data:     "32",
+			next:     nil,
+			previous: nil,
+		}
+		p.Insert(node)
 	}
-	p.Insert(node)
-}
 
-// Item - holds the key and the data associated with a single item
-type Item struct {
-	key  int
-	data string
-}
-
-// DATable - implements a direct address table.
-type DATable struct {
-	array []*Item
-}
-
-// NewDATable - returns a new DATable with initialized internal structure.
-func NewDATable(size int) DATable {
-	var initializedArray = make([]*Item, size)
-	var value = DATable{array: initializedArray}
-	return value
-}
-
-// Search - returns the item at index key to the caller.
-// O(1)
-func (dat *DATable) Search(key int) *Item {
-	return dat.array[key]
-}
-
-// Insert - inserts an item in the table - O(1)
-func (dat *DATable) Insert(item *Item) {
-	dat.array[item.key] = item
-}
-
-// Delete - deletes an element from the table.
-// O(1)
-func (dat *DATable) Delete(key int) {
-	dat.array[key] = nil
+	for i := 0; i < 10; i++ {
+		var t = rand.Intn(20)
+		p.Delete(t)
+	}
+	p.Traverse()
 }
 
 // NewDict - initiates a new dict object.
@@ -107,7 +85,6 @@ type Dict struct {
 // Worst case - O(n) when we have to resize the array.
 func (dict *Dict) Insert(node *Node) {
 	var index = dict.Hash(node.key)
-
 	dict.array[index].Insert(node)
 	dict.count++
 	if dict.count > dict.size {
@@ -150,13 +127,36 @@ func (dict *Dict) Resize(upwards bool) {
 			if currentNode == nil {
 				break
 			} else {
-				var index = dict.Hash(currentNode.key)
+				var (
+					index    = dict.Hash(currentNode.key)
+					nextNode = currentNode.Next()
+				)
+				currentNode.next = nil
+				currentNode.previous = nil
 				newArray[index].Insert(currentNode)
-				currentNode = currentNode.Next()
+				currentNode = nextNode
 			}
 		}
 	}
 	dict.array = newArray
+}
+
+// Traverse - traverses the hash table.
+func (dict *Dict) Traverse() {
+	for i := 0; i < len(dict.array); i++ {
+		var currentNode = dict.array[i].head
+		for {
+			if currentNode == nil {
+				break
+			} else {
+				fmt.Println(currentNode.key)
+				var nextNode = currentNode.Next()
+				currentNode.next = nil
+				currentNode.previous = nil
+				currentNode = nextNode
+			}
+		}
+	}
 }
 
 // Hash - returns the has value that we are going to use as index
@@ -197,16 +197,25 @@ func (list *LinkedList) Delete(key int) {
 		sentinel    = true
 		currentNode = list.head
 	)
-	for sentinel {
-		if currentNode.key != key {
-			currentNode = currentNode.Next()
-		} else {
-			currentNode.previous.next = currentNode.Next()
-			currentNode.next.previous = currentNode.Previous()
-			sentinel = false
+	if list.head != nil && list.head.key == key {
+		list.head = list.head.Next()
+	} else {
+		for sentinel {
+			if currentNode != nil && currentNode.key != key {
+				currentNode = currentNode.Next()
+			} else {
+				if currentNode != nil {
+					if currentNode.previous != nil {
+						currentNode.previous.next = currentNode.Next()
+					}
+					if currentNode.next != nil {
+						currentNode.next.previous = currentNode.Previous()
+					}
+				}
+				sentinel = false
+			}
 		}
 	}
-
 }
 
 // Search - searches through the linked list and returns a pointer to the node.
