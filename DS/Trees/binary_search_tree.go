@@ -61,11 +61,54 @@ func (tree *BinarySearchTree) MaxElement(node *Node) *Node {
 
 // Successor - returns the successor of a node in the BST
 func (tree *BinarySearchTree) Successor(node *Node) *Node {
+	// if there is a right subtree, then we just find the min element in it.
+	// Otherwise we search for the first node that has the current node in its left subtree.
+	// This means that this would be the first node larger than the current one.
 	if node.right != nil {
 		return tree.MinElement(node.right)
 	}
 	var y = node.parent
-	for node.parent != nil && node != y.right {
+	for node.parent != nil && node == y.right {
+		node = y
+		y = y.parent
+	}
+	return y
+}
+
+// Predecessor - returns the predecessor of the given node.
+func (tree *BinarySearchTree) Predecessor(node *Node) *Node {
+	// If there is a left subtree, then we just get the max element in it.
+	// if there isnt a left subtree, then we look for the first node (from our current node upwards) that
+	// that has our current mode in its right subtree. This means that the current node is the first
+	// node larger than it.
+	// 					+-------+
+	// 					|    8	|
+	// 					|    	|
+	//			 		+-------+
+	//			 		|	^	|
+	//			 		|	|p	|
+	//			 +-------+	|r	+-------+
+	//			 |   4 	 |	|e	|   16 	|
+	//			 |    	 |	|d	|    	|
+	//			 +-------+	|e	+-------+
+	//			 			|s	|		|
+	//			 			|	|		|
+	//			 		+-------+		+-------+
+	//			 		|   12 	|		|   17 	|
+	//			 		|    	|		|    	|
+	//			 		+-------+		+-------+
+	//			 				|
+	//			 				|
+	//			 				+-------+
+	//			 				|   14 	|
+	//			 				|    	|
+	//			 				+-------+
+
+	if node.left != nil {
+		return tree.MaxElement(node.left)
+	}
+	var y = node.parent
+	for node.parent != nil && node == y.left {
 		node = y
 		y = y.parent
 	}
