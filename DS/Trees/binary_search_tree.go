@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 // Binary Search Tree property
 
 // Let x be a node in a binary search tree. The left nodes contains keys that are less
@@ -16,12 +20,31 @@ package main
 // Postorder tree walk - prints left -> right -> root / right -> left -> root
 
 func main() {
-
+	var s = BinarySearchTree{nil}
+	var arr = []int{5, 6, 2, 8, 3, 10, 7, 11, 9}
+	for i := 0; i < len(arr); i++ {
+		var p = &Node{
+			parent: nil,
+			key:    arr[i],
+			data:   i,
+			left:   nil,
+			right:  nil,
+		}
+		s.Insert(p)
+	}
+	var x = s.Search(s.root, 8)
+	s.Delete(x)
+	s.InOrderTraversal()
 }
 
 // BinarySearchTree - represents a BST
 type BinarySearchTree struct {
 	root *Node
+}
+
+// InOrderTraversal - prints the values in order.
+func (tree *BinarySearchTree) InOrderTraversal() {
+	tree.root.InOrderPrint()
 }
 
 // Search - returns a pointer to the required node
@@ -43,7 +66,7 @@ func (tree *BinarySearchTree) Search(node *Node, val int) *Node {
 	return nil
 }
 
-// MinElement - returns the min element in the tree
+// MinElement - returns the min element in the sub-tree
 func (tree *BinarySearchTree) MinElement(node *Node) *Node {
 	for node.left != nil {
 		node = node.left
@@ -51,7 +74,7 @@ func (tree *BinarySearchTree) MinElement(node *Node) *Node {
 	return node
 }
 
-// MaxElement - returns the max element in the BST
+// MaxElement - returns the max element in the sub-tree rooted at the given node
 func (tree *BinarySearchTree) MaxElement(node *Node) *Node {
 	for node.right != nil {
 		node = node.right
@@ -115,6 +138,71 @@ func (tree *BinarySearchTree) Predecessor(node *Node) *Node {
 	return y
 }
 
+// Insert - inserts a node into the binary tree.
+func (tree *BinarySearchTree) Insert(node *Node) {
+	if tree.root != nil {
+		var currentNode = tree.root
+		for currentNode != nil {
+			if currentNode.key >= node.key {
+				// needs to go to the left
+				if currentNode.left != nil {
+					currentNode = currentNode.left
+				} else {
+					currentNode.left = node
+					node.parent = currentNode
+					currentNode = nil
+				}
+			} else {
+				// needs to go to the right
+				if currentNode.right != nil {
+					currentNode = currentNode.right
+				} else {
+					currentNode.right = node
+					node.parent = currentNode
+					currentNode = nil
+				}
+			}
+		}
+	} else {
+		tree.root = node
+	}
+}
+
+// Delete - deletes the given node from the tree
+func (tree *BinarySearchTree) Delete(node *Node) {
+	// Only left child or no children
+	if node.right == nil {
+		replace(tree, node, node.left)
+	} else if node.left == nil {
+		replace(tree, node, node.right)
+	} else {
+		var replacementNode = tree.MinElement(node.right)
+		if replacementNode.parent != node {
+			replace(tree, replacementNode, replacementNode.right)
+			replacementNode.right = node.right
+			replacementNode.right.parent = replacementNode
+		}
+		replace(tree, node, replacementNode)
+		replacementNode.left = node.left
+		replacementNode.left.parent = replacementNode
+	}
+
+	// both children
+}
+
+func replace(tree *BinarySearchTree, deletionNode, newNode *Node) {
+	if deletionNode.parent == nil {
+		tree.root = newNode
+	} else if deletionNode == deletionNode.parent.left {
+		deletionNode.parent.left = newNode
+	} else {
+		deletionNode.parent.right = newNode
+	}
+	if newNode != nil {
+		newNode.parent = deletionNode.parent
+	}
+}
+
 // Node - represents a node in the tree
 type Node struct {
 	parent *Node
@@ -122,4 +210,17 @@ type Node struct {
 	data   int
 	left   *Node
 	right  *Node
+}
+
+// InOrderPrint - prints the values in order
+func (node *Node) InOrderPrint() {
+
+	if node.left != nil {
+		fmt.Println("Left child of ", node.key, " is ", node.left.key)
+		node.left.InOrderPrint()
+	}
+	if node.right != nil {
+		fmt.Println("Right child of ", node.key, " is ", node.right.key)
+		node.right.InOrderPrint()
+	}
 }
