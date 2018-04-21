@@ -19,24 +19,6 @@ import (
 // Preorder tree walk - prints root -> left -> right / root -> right -> left
 // Postorder tree walk - prints left -> right -> root / right -> left -> root
 
-func main() {
-	var s = BinarySearchTree{nil}
-	var arr = []int{5, 6, 2, 8, 3, 10, 7, 11, 9}
-	for i := 0; i < len(arr); i++ {
-		var p = &Node{
-			parent: nil,
-			key:    arr[i],
-			data:   i,
-			left:   nil,
-			right:  nil,
-		}
-		s.Insert(p)
-	}
-	var x = s.Search(s.root, 8)
-	s.Delete(x)
-	s.InOrderTraversal()
-}
-
 // BinarySearchTree - represents a BST
 type BinarySearchTree struct {
 	root *Node
