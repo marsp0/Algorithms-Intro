@@ -5,19 +5,25 @@ import (
 )
 
 func main() {
-	var graph = NewGraph(true)
-	graph.AddVertex("A")
-	graph.AddVertex("B")
-	graph.AddVertex("C")
-	graph.AddVertex("D")
-	graph.AddEdge("A", "B")
-	graph.AddEdge("B", "C")
+	// var graph = NewGraph(false)
+	// graph.AddVertex("A")
+	// graph.AddVertex("B")
+	// graph.AddVertex("C")
+	// graph.AddVertex("D")
+	// graph.AddEdge("A", "B")
+	// graph.AddEdge("B", "C")
 
-	// graph.AddEdge("A", "D")
-	graph.AddEdge("C", "D")
-	graph.AddEdge("B", "D")
-	graph.DepthFirstSearch("A")
-	fmt.Println(graph.vertices["D"].distance)
+	// // graph.AddEdge("A", "D")
+	// graph.AddEdge("C", "D")
+	// graph.AddEdge("B", "D")
+	// graph.DepthFirstSearch("A")
+	// fmt.Println(graph.vertices["D"].distance)
+	var (
+		vertices = []string{"A", "B", "C", "D"}
+		edges    = [][2]string{{"A", "B"}, {"B", "C"}, {"C", "D"}, {"A", "C"}, {"B", "D"}}
+		weights  = []int{1, 5, 2, 6, 1}
+	)
+	fmt.Println(KruskalMST(vertices, edges, weights))
 }
 
 // NewGraph - returns a new graph object
@@ -183,31 +189,6 @@ func (graph *Graph) BoruvkaMST() {
 	return
 }
 
-// KruskalMST - https://en.wikipedia.org/wiki/Kruskal%27s_algorithm
-func (graph *Graph) KruskalMST() {
-	// TODO : FIGURE OUT HOW WE WILL RETURN THE TREE.
-
-	// Cut - partition of the vertices of a graph into two disjoint sets. Any cut determines a cut-set, the set
-	// of edges that have one endpoint in each subset of the partition. These edges are said to cross the cut.
-
-	// Greedy approach properties
-	// 1. Optimal substructure - optimal solution to problem incorporates optimal solutions to subproblems.
-	// 2. Greedy choice property - Locally optimal choices lead to globally optimal solution.
-
-	// Optimal substructure for MST : if e = [u,v] in an edge of some MST
-
-	// Pseudocode
-	// A = nil
-	// for each vertex v
-	// 		make set(v)
-	// sort edges in increasing order
-	// for each edge (u,v)
-	// if find-set(u) != find-set(v)
-	// 		A = A + (u,v)
-	// return A
-
-}
-
 // Reset - function that resets all the modifiable attributes of a Node.
 func (graph *Graph) Reset() {
 	for _, value := range graph.vertices {
@@ -234,6 +215,80 @@ type Vertex struct {
 	// 2 - black
 	color    int
 	distance int
+}
+
+// KruskalMST - https://en.wikipedia.org/wiki/Kruskal%27s_algorithm
+func KruskalMST(vertices []string, edges [][2]string, weights []int) [][2]string {
+	// we dont need state, distances etc so the graph representation as separate slices.
+
+	// TODO : FIGURE OUT HOW WE WILL RETURN THE TREE.
+
+	// Cut - partition of the vertices of a graph into two disjoint sets. Any cut determines a cut-set, the set
+	// of edges that have one endpoint in each subset of the partition. These edges are said to cross the cut.
+
+	// Greedy approach properties
+	// 1. Optimal substructure - optimal solution to problem incorporates optimal solutions to subproblems.
+	// 2. Greedy choice property - Locally optimal choices lead to globally optimal solution.
+
+	// Optimal substructure for MST : if e = [u,v] in an edge of some MST
+
+	// Pseudocode
+	// A = nil
+	// for each vertex v
+	// 		make set(v)
+	// sort edges in increasing order
+	// for each edge (u,v)
+	// if find-set(u) != find-set(v)
+	// 		A = A + (u,v)
+	// return A
+
+	// Runtime
+	//
+	var result = [][2]string{}
+	var unionfind = NewUnionFind()
+	for _, vertex := range vertices {
+		unionfind.MakeSet(vertex)
+	}
+	// sort the edges
+	Quicksort(edges, weights, 0, len(edges)-1)
+	for index := range weights {
+		if unionfind.FindRoot(edges[index][0]) != unionfind.FindRoot(edges[index][1]) {
+			result = append(result, edges[index])
+			unionfind.Union(edges[index][0], edges[index][1])
+		}
+	}
+	return result
+}
+
+// Quicksort - sorts the edges in Kruskal
+func Quicksort(edges [][2]string, weights []int, first, last int) {
+	if first < last {
+		var pivot = Partition(edges, weights, first, last)
+		Quicksort(edges, weights, first, pivot-1)
+		Quicksort(edges, weights, pivot+1, last)
+
+	}
+}
+
+// Partition - helper function for Quicksort
+func Partition(edges [][2]string, weights []int, first, last int) int {
+	var (
+		pivotIndex = last
+		pivot      = weights[pivotIndex]
+		wall       = first - 1
+		current    = first
+	)
+	for current < last {
+		if weights[current] <= pivot {
+			wall++
+			weights[wall], weights[current] = weights[current], weights[wall]
+			edges[wall], edges[current] = edges[current], edges[wall]
+		}
+		current++
+	}
+	weights[wall+1], weights[pivotIndex] = weights[pivotIndex], weights[wall+1]
+	edges[wall+1], edges[pivotIndex] = edges[pivotIndex], edges[wall+1]
+	return wall + 1
 }
 
 // UnionFind data structure for the Kruskal algorithm.
