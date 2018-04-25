@@ -145,21 +145,6 @@ class Graph(object):
 				self.topological_sort_util(item,visited,stack)
 		stack.push(node)
 
-	#
-	#Prim's Algorithm
-	#
-
-	def get_prims_mst(self):
-
-		'''using Prim's algorithm to obtain a minimum spaning tree '''
-
-		if self.is_directed():
-			
-			
-
-		else:
-			return False
-
 class Vertex(object):
 
 	def __init__(self,name):

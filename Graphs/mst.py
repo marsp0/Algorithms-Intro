@@ -48,7 +48,6 @@ class WeightedGraph(object):
 		pivot_edges = []
 
 		#NOTE : is it possible to make it in place ?
-		# is the place taken too much ?
 
 		if len(weights) < 1:
 			return weights,edges
