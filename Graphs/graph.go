@@ -2,28 +2,30 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
 func main() {
-	// var graph = NewGraph(false)
-	// graph.AddVertex("A")
-	// graph.AddVertex("B")
-	// graph.AddVertex("C")
-	// graph.AddVertex("D")
-	// graph.AddEdge("A", "B")
-	// graph.AddEdge("B", "C")
-
-	// // graph.AddEdge("A", "D")
-	// graph.AddEdge("C", "D")
-	// graph.AddEdge("B", "D")
-	// graph.DepthFirstSearch("A")
-	// fmt.Println(graph.vertices["D"].distance)
-	var (
-		vertices = []string{"A", "B", "C", "D"}
-		edges    = [][2]string{{"A", "B"}, {"B", "C"}, {"C", "D"}, {"A", "C"}, {"B", "D"}}
-		weights  = []int{1, 5, 2, 6, 1}
-	)
-	fmt.Println(KruskalMST(vertices, edges, weights))
+	var graph = NewGraph(true)
+	graph.AddVertex("undershorts")
+	graph.AddVertex("socks")
+	graph.AddVertex("watch")
+	graph.AddVertex("pants")
+	graph.AddVertex("shoes")
+	graph.AddVertex("shirt")
+	graph.AddVertex("belt")
+	graph.AddVertex("tie")
+	graph.AddVertex("jacket")
+	graph.AddEdge("undershorts", "pants", 1)
+	graph.AddEdge("undershorts", "shoes", 1)
+	graph.AddEdge("socks", "shoes", 1)
+	graph.AddEdge("pants", "belt", 1)
+	graph.AddEdge("shirt", "belt", 1)
+	graph.AddEdge("shirt", "tie", 1)
+	graph.AddEdge("belt", "jacket", 1)
+	graph.AddEdge("tie", "jacket", 1)
+	graph.AddEdge("pants", "shoes", 1)
+	fmt.Println(graph.TopologicalSort("undershorts"))
 }
 
 // NewGraph - returns a new graph object
@@ -38,13 +40,14 @@ func NewGraph(directed bool) *Graph {
 // Graph struct represents a graph object
 type Graph struct {
 	vertices map[string]*Vertex
+	edges    [][2]string
 	directed bool
 }
 
 // BreadthFirstSearch - does a BFS on the graph from the given node.
 func (graph *Graph) BreadthFirstSearch(id string) {
 	// Running time - O(V + E)
-	graph.Reset()
+	graph.Reset(false)
 	var queue = []string{id}
 	// We iterate as long as the Q is not empty
 	for len(queue) > 0 {
@@ -73,7 +76,7 @@ func (graph *Graph) BreadthFirstSearch(id string) {
 // DepthFirstSearch - does a DFS on the graph and updates the distances of the visited nodes.
 func (graph *Graph) DepthFirstSearch(id string) {
 	// running time is the same as BFS - O(V + E)
-	graph.Reset()
+	graph.Reset(false)
 	var (
 		stack = []string{id}
 	)
@@ -92,7 +95,7 @@ func (graph *Graph) DepthFirstSearch(id string) {
 }
 
 // IsAcyclic - shows if the graph contains cycles or not.
-func (graph *Graph) IsAcyclic(id string) bool {
+func (graph *Graph) IsAcyclic() bool {
 	// Types of edges
 	// 1. Tree edges - regular
 	// 2. back edge - edge (u,v) is a back edge if it connects u to an ancestor v
@@ -109,32 +112,37 @@ func (graph *Graph) IsAcyclic(id string) bool {
 	// 	DIRECTED GRAPH
 	// 	- Harder to detect, but thanks to (https://stackoverflow.com/questions/46506077/how-to-detect-cycles-in-a-directed-graph-using-the-iterative-version-of-dfs)
 	//  not impossible. I was aware of the recursive way, but was not sure of how to achieve it iteratively.
-	graph.Reset()
-	var (
-		stack     = []string{id}
-		enterExit = []bool{false}
-	)
-	for len(stack) > 0 {
-		var (
-			currentVertex = stack[len(stack)-1]
-			action        = enterExit[len(enterExit)-1]
-		)
-		stack = stack[:len(stack)-1]
-		enterExit = enterExit[:len(enterExit)-1]
-		if action {
-			// node is exiting
-			graph.vertices[currentVertex].state = 2
-		} else {
-			graph.vertices[currentVertex].state = 1
-			stack = append(stack, currentVertex)
-			enterExit = append(enterExit, true)
-			// iterate over the edges of the graph.
-			for key, value := range graph.vertices[currentVertex].edges {
-				if value.state == 1 {
-					return false
-				} else if value.state == 0 {
-					stack = append(stack, key)
-					enterExit = append(enterExit, false)
+	graph.Reset(false)
+	for key, value := range graph.vertices {
+		fmt.Println(key, value.state)
+		if value.state != 2 {
+			var (
+				stack     = []string{key}
+				enterExit = []bool{false}
+			)
+			for len(stack) > 0 {
+				var (
+					currentVertex = stack[len(stack)-1]
+					action        = enterExit[len(enterExit)-1]
+				)
+				stack = stack[:len(stack)-1]
+				enterExit = enterExit[:len(enterExit)-1]
+				if action {
+					// node is exiting
+					graph.vertices[currentVertex].state = 2
+				} else {
+					graph.vertices[currentVertex].state = 1
+					stack = append(stack, currentVertex)
+					enterExit = append(enterExit, true)
+					// iterate over the edges of the graph.
+					for key, value := range graph.vertices[currentVertex].edges {
+						if value.state == 1 {
+							return false
+						} else if value.state == 0 {
+							stack = append(stack, key)
+							enterExit = append(enterExit, false)
+						}
+					}
 				}
 			}
 		}
@@ -142,9 +150,32 @@ func (graph *Graph) IsAcyclic(id string) bool {
 	return true
 }
 
+// TopologicalSort - sorts the elements in a DAG
+func (graph *Graph) TopologicalSort(val string) []string {
+	var result = []string{}
+	graph.Reset(false)
+	for key, value := range graph.vertices {
+		if value.state != 2 {
+			graph.topologicalVisit(key, &result)
+		}
+	}
+	return result
+}
+
+func (graph *Graph) topologicalVisit(val string, result *[]string) {
+	graph.vertices[val].state = 1
+	for key, value := range graph.vertices[val].edges {
+		if value.state == 0 {
+			graph.topologicalVisit(key, result)
+		}
+	}
+	graph.vertices[val].state = 2
+	*result = append(*result, val)
+}
+
 // AddVertex - adds a vertex with no edges to the graph.
 func (graph *Graph) AddVertex(val string) {
-	graph.vertices[val] = &Vertex{val, map[string]*Vertex{}, map[string]int{}, 0, 0, 0}
+	graph.vertices[val] = &Vertex{val, map[string]*Vertex{}, map[string]int{}, 0, 0, 0, nil}
 }
 
 // RemoveVertex - removes a vertex from the graph.
@@ -162,14 +193,23 @@ func (graph *Graph) RemoveVertex(val string) {
 			delete(graph.vertices[key].weights, val)
 		}
 	}
+	for index, value := range graph.edges {
+		if value[0] == val || value[1] == val {
+			graph.edges = append(graph.edges[:index], graph.edges[index+1:]...)
+		}
+	}
 	delete(graph.vertices, val)
 }
 
 // AddEdge - adds an edge to the graph
-func (graph *Graph) AddEdge(val1, val2 string) {
+func (graph *Graph) AddEdge(val1, val2 string, weight int) {
 	graph.vertices[val1].edges[val2] = graph.vertices[val2]
+	graph.edges = append(graph.edges, [2]string{val1, val2})
+	graph.vertices[val1].weights[val2] = weight
 	if !graph.directed {
 		graph.vertices[val2].edges[val1] = graph.vertices[val1]
+		graph.edges = append(graph.edges, [2]string{val2, val1})
+		graph.vertices[val2].weights[val1] = weight
 	}
 }
 
@@ -181,18 +221,57 @@ func (graph *Graph) RemoveEdge(val1, val2 string) {
 		delete(graph.vertices[val2].edges, val1)
 		delete(graph.vertices[val2].weights, val1)
 	}
+	for index, tuple := range graph.edges {
+		if tuple[0] == val1 && tuple[1] == val2 || tuple[0] == val2 && tuple[1] == val1 {
+			graph.edges = append(graph.edges[:index], graph.edges[index+1:]...)
+		}
+	}
 }
 
 // BoruvkaMST - implements the algorithm from the wiki link. TO BE DONE
 func (graph *Graph) BoruvkaMST() {
 	// https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm
 	return
+
+}
+
+// BellmanFord - returns the shortest path from source to destination using
+// Bellman-Ford's algorithm.
+func (graph *Graph) BellmanFord(source string) bool {
+	// Running time O(V * E)
+	graph.Reset(true)
+	graph.vertices[source].distance = 0
+	for _, vertex := range graph.vertices {
+		for _, edge := range graph.edges {
+			graph.Relax(edge[0], edge[1], vertex.weights[edge[1]])
+		}
+	}
+	for _, edge := range graph.edges {
+		if graph.vertices[edge[1]].distance > graph.vertices[edge[0]].distance+graph.vertices[edge[0]].weights[edge[1]] {
+			return false
+		}
+	}
+	return true
+}
+
+// Relax - relaxes a vertex by checking if the current distance it has is smaller by the distance of the previous vertex + the weight.
+func (graph *Graph) Relax(source, destination string, weight int) {
+	if graph.vertices[destination].distance > graph.vertices[source].distance+weight {
+		graph.vertices[destination].distance = graph.vertices[source].distance + weight
+		graph.vertices[destination].predecessor = graph.vertices[source]
+	}
 }
 
 // Reset - function that resets all the modifiable attributes of a Node.
-func (graph *Graph) Reset() {
+func (graph *Graph) Reset(shortestPath bool) {
 	for _, value := range graph.vertices {
-		value.distance = 0
+		if shortestPath {
+			value.distance = math.MaxInt32
+
+		} else {
+			value.distance = 0
+		}
+		value.predecessor = nil
 		value.color = 0
 		value.state = 0
 	}
@@ -203,7 +282,6 @@ type Vertex struct {
 	id      string
 	edges   map[string]*Vertex
 	weights map[string]int
-
 	// 0 - not processed
 	// 1 - started processing
 	// 2 - processed
@@ -213,8 +291,9 @@ type Vertex struct {
 	// 0 - white
 	// 1 - grey
 	// 2 - black
-	color    int
-	distance int
+	color       int
+	distance    int
+	predecessor *Vertex
 }
 
 // KruskalMST - https://en.wikipedia.org/wiki/Kruskal%27s_algorithm
