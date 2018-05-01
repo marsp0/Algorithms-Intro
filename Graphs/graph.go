@@ -7,25 +7,24 @@ import (
 
 func main() {
 	var graph = NewGraph(true)
-	graph.AddVertex("undershorts")
-	graph.AddVertex("socks")
-	graph.AddVertex("watch")
-	graph.AddVertex("pants")
-	graph.AddVertex("shoes")
-	graph.AddVertex("shirt")
-	graph.AddVertex("belt")
-	graph.AddVertex("tie")
-	graph.AddVertex("jacket")
-	graph.AddEdge("undershorts", "pants", 1)
-	graph.AddEdge("undershorts", "shoes", 1)
-	graph.AddEdge("socks", "shoes", 1)
-	graph.AddEdge("pants", "belt", 1)
-	graph.AddEdge("shirt", "belt", 1)
-	graph.AddEdge("shirt", "tie", 1)
-	graph.AddEdge("belt", "jacket", 1)
-	graph.AddEdge("tie", "jacket", 1)
-	graph.AddEdge("pants", "shoes", 1)
-	fmt.Println(graph.TopologicalSort("undershorts"))
+	graph.AddVertex("A")
+	graph.AddVertex("B")
+	graph.AddVertex("C")
+	graph.AddVertex("D")
+	graph.AddVertex("E")
+	graph.AddEdge("A", "C", 5)
+	graph.AddEdge("A", "B", 1)
+	graph.AddEdge("C", "B", 2)
+	graph.AddEdge("C", "D", 1)
+	graph.AddEdge("B", "E", 3)
+	graph.AddEdge("D", "E", 1)
+	graph.AddEdge("E", "D", 2)
+	graph.Dijkstra("A")
+	var currentNode = graph.vertices["E"]
+	for currentNode != nil {
+		fmt.Println(currentNode.id, currentNode.distance)
+		currentNode = currentNode.predecessor
+	}
 }
 
 // NewGraph - returns a new graph object
@@ -42,6 +41,84 @@ type Graph struct {
 	vertices map[string]*Vertex
 	edges    [][2]string
 	directed bool
+}
+
+// AddVertex - adds a vertex with no edges to the graph.
+func (graph *Graph) AddVertex(val string) {
+	graph.vertices[val] = &Vertex{val, map[string]*Vertex{}, map[string]int{}, 0, 0, 0, nil}
+}
+
+// RemoveVertex - removes a vertex from the graph.
+func (graph *Graph) RemoveVertex(val string) {
+	if graph.directed {
+		for _, value := range graph.vertices {
+			if value.id != val {
+				delete(value.edges, val)
+				delete(value.weights, val)
+			}
+		}
+	} else {
+		for key := range graph.vertices[val].edges {
+			delete(graph.vertices[key].edges, val)
+			delete(graph.vertices[key].weights, val)
+		}
+	}
+	for index, value := range graph.edges {
+		if value[0] == val || value[1] == val {
+			graph.edges = append(graph.edges[:index], graph.edges[index+1:]...)
+		}
+	}
+	delete(graph.vertices, val)
+}
+
+// AddEdge - adds an edge to the graph
+func (graph *Graph) AddEdge(val1, val2 string, weight int) {
+	graph.vertices[val1].edges[val2] = graph.vertices[val2]
+	graph.edges = append(graph.edges, [2]string{val1, val2})
+	graph.vertices[val1].weights[val2] = weight
+	if !graph.directed {
+		graph.vertices[val2].edges[val1] = graph.vertices[val1]
+		graph.edges = append(graph.edges, [2]string{val2, val1})
+		graph.vertices[val2].weights[val1] = weight
+	}
+}
+
+// RemoveEdge - removes an edge from the graph.
+func (graph *Graph) RemoveEdge(val1, val2 string) {
+	delete(graph.vertices[val1].edges, val2)
+	delete(graph.vertices[val1].weights, val2)
+	if !graph.directed {
+		delete(graph.vertices[val2].edges, val1)
+		delete(graph.vertices[val2].weights, val1)
+	}
+	for index, tuple := range graph.edges {
+		if tuple[0] == val1 && tuple[1] == val2 || tuple[0] == val2 && tuple[1] == val1 {
+			graph.edges = append(graph.edges[:index], graph.edges[index+1:]...)
+		}
+	}
+}
+
+// Relax - relaxes a vertex by checking if the current distance it has is smaller by the distance of the previous vertex + the weight.
+func (graph *Graph) Relax(source, destination string, weight int) {
+	if graph.vertices[destination].distance > graph.vertices[source].distance+weight {
+		graph.vertices[destination].distance = graph.vertices[source].distance + weight
+		graph.vertices[destination].predecessor = graph.vertices[source]
+	}
+}
+
+// Reset - function that resets all the modifiable attributes of a Node.
+func (graph *Graph) Reset(shortestPath bool) {
+	for _, value := range graph.vertices {
+		if shortestPath {
+			value.distance = math.MaxInt32
+
+		} else {
+			value.distance = 0
+		}
+		value.predecessor = nil
+		value.color = 0
+		value.state = 0
+	}
 }
 
 // BreadthFirstSearch - does a BFS on the graph from the given node.
@@ -114,7 +191,6 @@ func (graph *Graph) IsAcyclic() bool {
 	//  not impossible. I was aware of the recursive way, but was not sure of how to achieve it iteratively.
 	graph.Reset(false)
 	for key, value := range graph.vertices {
-		fmt.Println(key, value.state)
 		if value.state != 2 {
 			var (
 				stack     = []string{key}
@@ -150,8 +226,8 @@ func (graph *Graph) IsAcyclic() bool {
 	return true
 }
 
-// TopologicalSort - sorts the elements in a DAG
-func (graph *Graph) TopologicalSort(val string) []string {
+// TopologicalSort - sorts the elements in a DAG in O(V+E) time
+func (graph *Graph) TopologicalSort() []string {
 	var result = []string{}
 	graph.Reset(false)
 	for key, value := range graph.vertices {
@@ -173,57 +249,18 @@ func (graph *Graph) topologicalVisit(val string, result *[]string) {
 	*result = append(*result, val)
 }
 
-// AddVertex - adds a vertex with no edges to the graph.
-func (graph *Graph) AddVertex(val string) {
-	graph.vertices[val] = &Vertex{val, map[string]*Vertex{}, map[string]int{}, 0, 0, 0, nil}
-}
-
-// RemoveVertex - removes a vertex from the graph.
-func (graph *Graph) RemoveVertex(val string) {
-	if graph.directed {
-		for _, value := range graph.vertices {
-			if value.id != val {
-				delete(value.edges, val)
-				delete(value.weights, val)
-			}
-		}
-	} else {
-		for key := range graph.vertices[val].edges {
-			delete(graph.vertices[key].edges, val)
-			delete(graph.vertices[key].weights, val)
-		}
-	}
-	for index, value := range graph.edges {
-		if value[0] == val || value[1] == val {
-			graph.edges = append(graph.edges[:index], graph.edges[index+1:]...)
-		}
-	}
-	delete(graph.vertices, val)
-}
-
-// AddEdge - adds an edge to the graph
-func (graph *Graph) AddEdge(val1, val2 string, weight int) {
-	graph.vertices[val1].edges[val2] = graph.vertices[val2]
-	graph.edges = append(graph.edges, [2]string{val1, val2})
-	graph.vertices[val1].weights[val2] = weight
-	if !graph.directed {
-		graph.vertices[val2].edges[val1] = graph.vertices[val1]
-		graph.edges = append(graph.edges, [2]string{val2, val1})
-		graph.vertices[val2].weights[val1] = weight
-	}
-}
-
-// RemoveEdge - removes an edge from the graph.
-func (graph *Graph) RemoveEdge(val1, val2 string) {
-	delete(graph.vertices[val1].edges, val2)
-	delete(graph.vertices[val1].weights, val2)
-	if !graph.directed {
-		delete(graph.vertices[val2].edges, val1)
-		delete(graph.vertices[val2].weights, val1)
-	}
-	for index, tuple := range graph.edges {
-		if tuple[0] == val1 && tuple[1] == val2 || tuple[0] == val2 && tuple[1] == val1 {
-			graph.edges = append(graph.edges[:index], graph.edges[index+1:]...)
+// DAGShortestPath - computes the shortest path in a DAG in O(V+E)
+func (graph *Graph) DAGShortestPath() {
+	// O(V+E)
+	var vertices = graph.TopologicalSort()
+	// O(V)
+	graph.Reset(true)
+	// O(V+E)
+	// Agregate analysis
+	for i := len(vertices) - 1; i >= 0; i-- {
+		var vertex = vertices[i]
+		for key := range graph.vertices[vertex].edges {
+			graph.Relax(vertex, key, graph.vertices[vertex].weights[key])
 		}
 	}
 }
@@ -232,7 +269,6 @@ func (graph *Graph) RemoveEdge(val1, val2 string) {
 func (graph *Graph) BoruvkaMST() {
 	// https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm
 	return
-
 }
 
 // BellmanFord - returns the shortest path from source to destination using
@@ -254,26 +290,25 @@ func (graph *Graph) BellmanFord(source string) bool {
 	return true
 }
 
-// Relax - relaxes a vertex by checking if the current distance it has is smaller by the distance of the previous vertex + the weight.
-func (graph *Graph) Relax(source, destination string, weight int) {
-	if graph.vertices[destination].distance > graph.vertices[source].distance+weight {
-		graph.vertices[destination].distance = graph.vertices[source].distance + weight
-		graph.vertices[destination].predecessor = graph.vertices[source]
-	}
-}
-
-// Reset - function that resets all the modifiable attributes of a Node.
-func (graph *Graph) Reset(shortestPath bool) {
+// Dijkstra - returns the shortest path in O((E + V)logV) time
+func (graph *Graph) Dijkstra(source string) {
+	graph.Reset(true)
+	graph.vertices[source].distance = 0
+	var (
+		priorityQueue = []*Vertex{}
+		indexMap      = map[string]int{}
+	)
 	for _, value := range graph.vertices {
-		if shortestPath {
-			value.distance = math.MaxInt32
-
-		} else {
-			value.distance = 0
+		priorityQueue = append(priorityQueue, value)
+		indexMap[value.id] = len(priorityQueue) - 1
+	}
+	buildQueue(priorityQueue, indexMap)
+	for len(priorityQueue) > 0 {
+		var vertex = extractMin(&priorityQueue, indexMap)
+		for key := range vertex.edges {
+			graph.Relax(vertex.id, key, vertex.weights[key])
+			bubleUp(priorityQueue, indexMap[key], indexMap)
 		}
-		value.predecessor = nil
-		value.color = 0
-		value.state = 0
 	}
 }
 
@@ -295,6 +330,10 @@ type Vertex struct {
 	distance    int
 	predecessor *Vertex
 }
+
+// ##########################################
+// 					Kruskal
+// ##########################################
 
 // KruskalMST - https://en.wikipedia.org/wiki/Kruskal%27s_algorithm
 func KruskalMST(vertices []string, edges [][2]string, weights []int) [][2]string {
@@ -414,4 +453,70 @@ func (unionfind *UnionFind) Union(val1, val2 string) {
 		delete(unionfind.size, root2)
 
 	}
+}
+
+// ################################################
+// 						Dijstra PQ
+// ################################################
+
+func bubleDown(array []*Vertex, item int, indexMap map[string]int) {
+	var left, right, smallest = Left(item), Right(item), 0
+	if left < len(array) && array[left].distance <= array[item].distance {
+		smallest = left
+	} else {
+		smallest = item
+	}
+	if right < len(array) && (array)[right].distance < array[item].distance {
+		smallest = right
+	}
+	if item != smallest {
+		array[item], array[smallest] = array[smallest], array[item]
+		var itemID, smallestID = array[item].id, array[smallest].id
+		indexMap[itemID], indexMap[smallestID] = indexMap[smallestID], indexMap[itemID]
+		bubleDown(array, smallest, indexMap)
+	}
+}
+
+func bubleUp(array []*Vertex, index int, indexMap map[string]int) {
+	var parentIndex = Parent(index)
+	for parentIndex >= 0 && index > 0 {
+		if array[index].distance < array[parentIndex].distance {
+			indexMap[array[index].id], indexMap[array[parentIndex].id] = indexMap[array[parentIndex].id], indexMap[array[index].id]
+			array[index], array[parentIndex] = array[parentIndex], array[index]
+		}
+		index = parentIndex
+		parentIndex = Parent(parentIndex)
+	}
+}
+
+func buildQueue(array []*Vertex, indexMap map[string]int) {
+	var j = len(array) / 2
+	for j > -1 {
+		bubleDown(array, j, indexMap)
+		j--
+	}
+}
+
+func extractMin(array *[]*Vertex, indexMap map[string]int) *Vertex {
+	var toReturn = (*array)[0]
+	(*array)[0] = (*array)[len(*array)-1]
+	indexMap[(*array)[0].id] = 0
+	*array = (*array)[:len(*array)-1]
+	bubleDown(*array, 0, indexMap)
+	return toReturn
+}
+
+// Left - returns left child of the element
+func Left(i int) int {
+	return 2*i + 1
+}
+
+// Right - returns right child of the element
+func Right(i int) int {
+	return 2*i + 2
+}
+
+//Parent - returns the parent of the element
+func Parent(i int) int {
+	return (i - 1) / 2
 }

@@ -33,18 +33,18 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"sort"
 )
 
 func main() {
 	var i int
 	var array []int
-	for i < 10000000 {
+	for i < 1000000 {
 		array = append(array, rand.Int())
 		i++
 	}
-	Heapsort(array)
-	fmt.Println(sort.IntsAreSorted(array))
+	var someArray = []int{3, 4, 5, 2, 6}
+	buildMinHeap(someArray, len(someArray)-1)
+	fmt.Println(someArray)
 }
 
 // Heapsort - sorts the array in place with the heapsort algorithm
@@ -71,7 +71,7 @@ func Right(i int) int {
 
 // Parent - returns the position of the parent
 func Parent(i int) int {
-	return i / 2
+	return (i - 1) / 2
 }
 
 func buildMaxHeap(array []int, heapsize int) {
